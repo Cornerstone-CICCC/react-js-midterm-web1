@@ -8,7 +8,7 @@ export interface IProduct extends Document{
     rating:number,
     stock:number
     brand:string,
-    images:string
+    image:string
 }
 
 const ProductSchema :Schema = new Schema({
@@ -19,7 +19,7 @@ const ProductSchema :Schema = new Schema({
     rating:{type:Number},
     stock:{type:Number},
     brand:{type:String},
-    images:{type:String}
+    image:{type:String}
 },{
     timestamps:true
 })

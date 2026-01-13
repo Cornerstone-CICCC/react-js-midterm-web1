@@ -43,7 +43,7 @@ const ProductSchema = new mongoose_1.Schema({
     rating: { type: Number },
     stock: { type: Number },
     brand: { type: String },
-    images: { type: String }
+    image: { type: String }
 }, {
     timestamps: true
 });

@@ -19,7 +19,7 @@ const findCompanyByCategory= async(category:string)=>{
 
 //create procudt
 const add = async(newProduct:Partial<IProduct>)=>{
-    const {title,description,category,price,stock,brand,images} = newProduct
+    const {title,description,category,price,stock,brand,image} = newProduct
     if(!title||!description||!category||!price) return
 
     return await Product.create({
@@ -29,7 +29,7 @@ const add = async(newProduct:Partial<IProduct>)=>{
         price,
         stock,
         brand,
-        images
+        image
     })
 
 }

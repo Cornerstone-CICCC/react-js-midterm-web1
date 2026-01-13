@@ -57,11 +57,11 @@ const getProductByQuery = (req, res) => __awaiter(void 0, void 0, void 0, functi
 });
 // Create Product
 const addProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { title, description, category, price, stock, brand, images } = req.body;
+    const { title, description, category, price, stock, brand, image } = req.body;
     if (!title || !description || !category || !price || !brand)
         return;
     try {
-        const newProduct = yield product_service_1.default.add({ title, description, category, price, stock, brand, images });
+        const newProduct = yield product_service_1.default.add({ title, description, category, price, stock, brand, image });
         if (!newProduct) {
             res.status(500).json({ message: "Unable to add product" });
             return;
@@ -75,9 +75,9 @@ const addProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 //Update Product by id
 const updateProductById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { title, description, category, price, stock, brand, images, rating } = req.body;
+    const { title, description, category, price, stock, brand, image, rating } = req.body;
     try {
-        const updatedProduct = yield product_service_1.default.update(req.params.id, { title, description, category, price, stock, brand, images, rating });
+        const updatedProduct = yield product_service_1.default.update(req.params.id, { title, description, category, price, stock, brand, image, rating });
         if (!updatedProduct) {
             res.status(500).json({ message: "Unable to update Product" });
             return;

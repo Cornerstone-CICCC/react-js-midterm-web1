@@ -47,12 +47,12 @@ const getProductByQuery = async(req: Request<{},{},{}, {category:string}>, res: 
 
 // Create Product
 const addProduct = async(req: Request<{}, IProduct>, res: Response) => {
-  const {title,description,category,price,stock,brand,images}  = req.body
+  const {title,description,category,price,stock,brand,image}  = req.body
 
   if(!title||!description||!category||!price ||!brand) return
 
   try{
-    const newProduct = await productService.add({title,description,category,price,stock,brand,images})
+    const newProduct = await productService.add({title,description,category,price,stock,brand,image})
     if(!newProduct) {
       res.status(500).json({message: "Unable to add product"})
       return
@@ -67,9 +67,9 @@ const addProduct = async(req: Request<{}, IProduct>, res: Response) => {
 
 //Update Product by id
 const updateProductById = async(req: Request<{id: string}, Partial<IProduct>>, res: Response) => {
-  const  {title,description,category,price,stock,brand,images,rating} = req.body
+  const  {title,description,category,price,stock,brand,image,rating} = req.body
   try{
-    const updatedProduct = await productService.update(req.params.id, {title,description,category,price,stock,brand,images,rating})
+    const updatedProduct = await productService.update(req.params.id, {title,description,category,price,stock,brand,image,rating})
 
     if(!updatedProduct) {
       res.status(500).json({message: "Unable to update Product"})
