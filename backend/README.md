@@ -13,7 +13,7 @@
 | GET | `/products` | Get all products | |
 | GET | `/products/:id` | Get product by ID ||
 | PUT | `/products/search?category=:category` | Find products by category ||
-| POST | `/products` | Create a product|`{title,description,category,price,stock?,brand,images}`|
+| POST | `/products` | Create a product|`{title,description,category,price,stock?,brand?,images}`|
 | PUT | `/products/:id` | Update product | |
 | DELETE | `/products/:id` | Delete product | |
 

@@ -25,7 +25,7 @@ const findCompanyByCategory = (category) => __awaiter(void 0, void 0, void 0, fu
 //create procudt
 const add = (newProduct) => __awaiter(void 0, void 0, void 0, function* () {
     const { title, description, category, price, stock, brand, images } = newProduct;
-    if (!title || !description || !category || !price || !brand)
+    if (!title || !description || !category || !price)
         return;
     return yield product_mode_1.Product.create({
         title,
