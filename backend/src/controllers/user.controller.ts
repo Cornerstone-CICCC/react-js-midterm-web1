@@ -129,7 +129,7 @@ const login = async (req: Request<{}, {}, IUserLogin>, res:Response) => {
         _id:result.user._id,
         username:result.user.username,
         role:result.user.role,
-        cartItems:result.cartItems
+        cartId:result.cart?._id
       }
     }
 
