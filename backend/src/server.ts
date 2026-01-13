@@ -5,6 +5,10 @@ import cookieSession from 'cookie-session'
 import dotenv from 'dotenv'
 
 import { createServer } from 'http'
+import userRouter from './routes/user.routes'
+import productRouter from './routes/product.routes'
+import cartRouter from './routes/cart.routes'
+import cartItemRouter from './routes/cartIrem.routes'
 
 dotenv.config()
 
@@ -31,6 +35,10 @@ app.use(express.json())
 
 
 //Routes
+app.use("/users", userRouter)
+app.use("/products", productRouter)
+app.use("/carts", cartRouter)
+app.use("/cart-items", cartItemRouter)
 
 
 app.get("/", (req: Request, res: Response) => {
@@ -55,7 +63,7 @@ if (!PORT || !CONN_STRING) {
 
 // to see if you can connect to Mongoose
 mongoose
-  .connect(CONN_STRING, {dbName: "wavechat"})
+  .connect(CONN_STRING, {dbName: "shop_app"})
   .then(() => {
     console.log('connected to MongoDB!')
 
