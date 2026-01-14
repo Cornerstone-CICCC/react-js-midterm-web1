@@ -31,14 +31,14 @@ export interface LoginResultType{
 }
 
 //If email is not unique, it will return error
-export const signup = async(newUser:SignupUser):Promise<IUser|null>=>{
+export const signup = async({username, email, password, role="customer"}:SignupUser):Promise<IUser|null>=>{
     try{
         const res = await fetch(`${endpoint}/users/signup`,{
             method:"POST",
             headers:{
                 "content-type":"application/json"
             },
-            body:JSON.stringify(newUser)
+            body:JSON.stringify({username, email, password, role})
         })
 
         const data:IUser = await res.json()
