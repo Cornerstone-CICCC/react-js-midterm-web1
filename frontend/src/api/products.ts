@@ -5,9 +5,9 @@ export interface IProduct{
     title:string,
     description:string,
     category:string,
-    createdAt: string,
+    createdAt?: string,
     price:number,
-    stock:number,
+    stock?:number,
     image:string
     brand:string
 }

@@ -1,6 +1,7 @@
 import { endpoint } from "."
 import type { ICart } from "./cart"
 import type { ICartItem } from "./cartItem"
+import type { IProduct } from "./products"
 
 export interface IUser{
     _id:string,
@@ -13,21 +14,32 @@ export interface SignupUser{
     username:string,
     password:string,
     email:string,
-    role:string,
+    role?:string,
 }
 
 export interface Login{
     email:string,
     password:string
 }
+export interface LoginResultICart{
+    cartId:string,
+    quantity:number,
+}
 
 export interface LoginResultType{
     message:string,
     result:{
         cart:ICart,
-        cartItem:ICartItem[],
+        cartItem:LoginResultICartItem[],
         user:IUser
     }
+}
+
+export interface LoginResultICartItem{
+    _id:string,
+    cartId:string,
+    productId:IProduct,
+    quantity:number
 }
 
 //If email is not unique, it will return error

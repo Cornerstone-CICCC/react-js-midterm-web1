@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthLayout from "../layouts/AuthLayout";
+import { signup } from "../api/user";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -36,7 +37,13 @@ export default function Signup() {
       setIsLoading(true);
 
       // TODO: replace with: await auth.signup({ username, email, password })
-      await new Promise((res) => setTimeout(res, 600));
+      //await new Promise((res) => setTimeout(res, 600));
+      const newUser = await signup({username, email, password})
+
+      if(!newUser){
+        console.error("Unable to create new user")
+        return
+      }
 
       // After signup, usually redirect to login
       navigate("/login");
