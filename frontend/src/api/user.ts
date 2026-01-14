@@ -78,7 +78,7 @@ export const getUserByID = async(userId:string):Promise<IUser|null>=>{
     }
 }
 
-//this endpoint will set cookies session and return LoginResultType
+//this endpoint will set cookies session and return LoginResultType(active cartId)
 export const login = async(loginInfo:Login):Promise<LoginResultType|null>=>{
     try{
         const res = await fetch(`${endpoint}/users/login`,{
