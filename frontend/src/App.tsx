@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import PageLayout from "./layouts/PageLayout";
+import Login from "./pages/Login";
 
 const App = () => {
   return (
@@ -11,7 +12,8 @@ const App = () => {
           <Route index element={<Home />} />
         </Route>
 
-        
+        <Route path="/login" element={<Login />} />
+
       </Routes>
     </BrowserRouter>
   );
