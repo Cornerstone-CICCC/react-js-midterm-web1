@@ -53,6 +53,7 @@ export const updateProductById = async(prodcutId:string,data:Partial<IProduct>):
     try{
         const res = await fetch(`${endpoint}/products/${prodcutId}`,{
             method:"PUT",
+            credentials: "include",
             headers:{
                 "content-type":"application/json"
             },
@@ -77,6 +78,7 @@ export const addProduct = async(productData:Partial<IProduct>):Promise<IProduct|
     try{
         const res = await fetch(`${endpoint}/products`,{
             method:"POST",
+            credentials: "include",
             headers:{
                 "content-type":"application/json"
             },
@@ -99,7 +101,8 @@ export const addProduct = async(productData:Partial<IProduct>):Promise<IProduct|
 export const deleteProduct = async(productId:string):Promise<boolean>=>{
     try{
         const res= await fetch(`${endpoint}/products/${productId}`,{
-            method:"DELETE"
+            method:"DELETE",
+            credentials: "include"
         })
 
         const deletedProduct:IProduct = await res.json()
