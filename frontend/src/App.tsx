@@ -6,9 +6,12 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public layout */}
         <Route path="/" element={<PageLayout />}>
           <Route index element={<Home />} />
         </Route>
+
+        
       </Routes>
     </BrowserRouter>
   );
