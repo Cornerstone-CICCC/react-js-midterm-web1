@@ -17,7 +17,7 @@ const app = express()
 
 //Middleware
 app.use(cors({
-  origin:`http://localhost:process.env.${process.env.REACT_PORT}`,
+  origin:`http://localhost:${process.env.REACT_PORT}`,
   credentials: true
 }))
 if (!process.env.COOKIE_PRIMARY_KEY || !process.env.COOKIE_SECONDARY_KEY) {

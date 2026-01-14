@@ -31,13 +31,14 @@ const getCartById = async(req: Request<{id: string}>, res: Response) => {
 // Create Cart
 const addCart = async(req: Request<{}, ICart>, res: Response) => {
   const {userId}  = req.body
+  console.log(userId)
 
   if(!userId) return
 
   try{
     const newCart = await cartService.add({userId})
     if(!newCart) {
-      res.status(500).json({message: "Unable to add Cart"})
+      res.status(500).json({message: "Active cart exist"})
       return
     }
     res.status(201).json(newCart)
