@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AuthLayout from "../layouts/AuthLayout";
 
-export default function Login() {
+export default function Signup() {
   const navigate = useNavigate();
 
+  const [username, setUsername] = useState(""); // optional (you can rename to "name")
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  // placeholders (we'll connect to AuthContext later)
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,22 +17,31 @@ export default function Login() {
     e.preventDefault();
     setError(null);
 
-    // basic front validation
-    if (!email.trim() || !password.trim()) {
-      setError("Please enter your email and password.");
+    if (!email.trim() || !password.trim() || !confirmPassword.trim()) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
       return;
     }
 
     try {
       setIsLoading(true);
 
-      // TODO: replace with: await auth.login(email, password)
+      // TODO: replace with: await auth.signup({ username, email, password })
       await new Promise((res) => setTimeout(res, 600));
 
-      // TODO: after real login, redirect based on role (admin -> /admin)
-      navigate("/"); // or "/products" if Miya has that route
+      // After signup, usually redirect to login
+      navigate("/login");
     } catch (err) {
-      setError("Invalid email or password.");
+      setError("Could not create account. Try a different email.");
     } finally {
       setIsLoading(false);
     }
@@ -39,11 +49,11 @@ export default function Login() {
 
   return (
     <AuthLayout
-      title="Login"
+      title="Create Account"
       subtitle="Welcome! Enter your details and start exploring."
-      footerText="Don't have an account?"
-      footerLinkText="Sign up"
-      footerLinkTo="/signup"
+      footerText="Already have an account?"
+      footerLinkText="Login"
+      footerLinkTo="/login"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Error */}
@@ -52,6 +62,19 @@ export default function Login() {
             {error}
           </div>
         )}
+
+        {/* Username (optional) */}
+        <div>
+          <label className="block text-sm text-white/70 mb-1">Username</label>
+          <input
+            type="text"
+            className="w-full rounded-full bg-white/10 border border-white/10 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-purple-500"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoComplete="nickname"
+          />
+        </div>
 
         {/* Email */}
         <div>
@@ -78,7 +101,23 @@ export default function Login() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
+            autoComplete="new-password"
+            required
+          />
+        </div>
+
+        {/* Confirm Password */}
+        <div>
+          <label className="block text-sm text-white/70 mb-1">
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            className="w-full rounded-full bg-white/10 border border-white/10 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-purple-500"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            autoComplete="new-password"
             required
           />
         </div>
@@ -89,27 +128,8 @@ export default function Login() {
           disabled={isLoading}
           className="w-full rounded-full bg-purple-600 hover:bg-purple-700 py-2.5 font-semibold transition"
         >
-          {isLoading ? "Logging in..." : "Login"}
+          {isLoading ? "Creating..." : "Create account"}
         </button>
-
-        {/* Helper links */}
-        <div className="flex items-center justify-between text-sm">
-          <Link
-            to="/"
-            className="text-white/60 hover:text-white underline underline-offset-4"
-          >
-            Back to Home
-          </Link>
-
-          {/* Optional: you can later add a /forgot route */}
-          <button
-            type="button"
-            className="text-purple-400 hover:text-purple-300 underline underline-offset-4"
-            onClick={() => setError("Forgot password is not implemented yet.")}
-          >
-            Forgot password?
-          </button>
-        </div>
       </form>
     </AuthLayout>
   );

@@ -23,19 +23,23 @@ export default function AuthLayout({
 }: AuthLayoutProps) {
   return (
     <div className="min-h-screen w-full bg-neutral-950 text-white">
-      <div className="min-h-screen w-full grid grid-cols-1 md:grid-cols-2">
-        {/* LEFT IMAGE */}
-        <div className="relative hidden md:block">
+      {/* Mobile: column (image top + content)
+          Desktop: 2 columns (image left + content right) */}
+      <div className="min-h-screen w-full grid grid-rows-[220px_1fr] md:grid-rows-1 md:grid-cols-2">
+        {/* IMAGE (shows on mobile as top banner) */}
+        <div className="relative">
           <img
             src={authHero}
             alt="Authentication artwork"
             className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-black/10 to-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-black/10 via-black/10 to-black/40" />
         </div>
 
-        {/* RIGHT PANEL */}
-        <div className="min-h-screen w-full bg-neutral-900/60 flex items-center justify-center px-6 py-10">
+        {/* CONTENT */}
+        <div className="w-full bg-neutral-900/60 px-6 py-10 md:px-10 md:py-0 md:flex md:items-center md:justify-center">
+          {/* On mobile: normal flow (no forced centering).
+              On desktop: centered panel width */}
           <div className="w-full max-w-lg">
             <header className="mb-6">
               <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">
