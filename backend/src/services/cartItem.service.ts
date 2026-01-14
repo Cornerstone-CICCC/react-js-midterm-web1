@@ -68,6 +68,10 @@ const remove = async(id:string)=>{
     return await CartItem.findByIdAndDelete(id)
 }
 
+const findProductInCart = async(cartId:string, productId:string)=>{
+    return await CartItem.findOne({cartId, productId})
+}
+
 export default{
     getAll,
     getById,
@@ -75,5 +79,6 @@ export default{
     getByCartId,
     add,
     update,
-    remove
+    remove,
+    findProductInCart
 }

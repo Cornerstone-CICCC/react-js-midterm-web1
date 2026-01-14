@@ -22,7 +22,7 @@ const add = async (newCart:Partial<ICart>)=>{
 
     const cart = await getByUserId(userId.toString())
 
-    //if cart exist, retun 
+    //if active cart exist, retun 
     if(cart){
         return
     }
