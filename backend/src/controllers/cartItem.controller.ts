@@ -45,6 +45,7 @@ const getCartItemByQuery = async(req: Request<{},{},{},{cartId:string, userId:st
             return 
         }else{
             const cartItems = await cartItemService.getByCartId(cartId)
+            console.log(cartItems)
             if(!cartItems) {
                 res.status(404).json({message: "CartItem not found"})
                 return
@@ -62,11 +63,21 @@ const getCartItemByQuery = async(req: Request<{},{},{},{cartId:string, userId:st
 
 // Create CartItem
 const addCartItem = async(req: Request<{}, ICartItem>, res: Response) => {
-  const {cartId,productId, quantity}  = req.body
+  const {cartId,productId, quantity=1}  = req.body
 
-  if(!cartId|| !productId||!quantity) return
+  if(!cartId|| !productId) return res.status(400).json({ message: "Missing cartId or productId" })
 
   try{
+    //Look into cart to find matching products
+    const existingItem = await cartItemService.findProductInCart(cartId, productId)
+    console.log(existingItem)
+
+    if(existingItem){
+      const updatedCart = await cartItemService.update(existingItem._id.toString(), {quantity:existingItem.quantity +quantity})
+      console.log(updatedCart)
+        res.status(201).json(updatedCart)
+      return 
+    }
     const newCartItem = await cartItemService.add({cartId,productId, quantity})
     if(!newCartItem) {
       res.status(500).json({message: "Unable to add CartItem"})
@@ -83,9 +94,14 @@ const addCartItem = async(req: Request<{}, ICartItem>, res: Response) => {
 
 //Update CartItem by id
 const updateCartItemById = async(req: Request<{id: string}, Partial<ICartItem>>, res: Response) => {
-  const  {productId, quantity} = req.body
   try{
-    const updatedCartItem = await cartItemService.update(req.params.id,  {productId, quantity})
+    const  { quantity} = req.body
+
+    if(quantity<=0){
+        await cartItemService.remove(req.params.id)
+        return res.status(200).json({message:"item removed"})
+      }
+    const updatedCartItem = await cartItemService.update(req.params.id,  { quantity})
 
     if(!updatedCartItem) {
       res.status(500).json({message: "Unable to update CartItem"})
