@@ -56,9 +56,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    // ✅ full-screen + prevent outer scrollbar
     <div className="h-screen w-full overflow-hidden bg-neutral-950 text-white">
-      {/* ✅ full-height content area */}
       <div className="h-full w-full px-5 py-8 md:px-10 md:py-10">
         {/* Title */}
         <div className="mb-6">
@@ -67,7 +65,7 @@ export default function AdminDashboard() {
           </h1>
         </div>
 
-        {/* Panel (fills remaining height) */}
+        {/* Panel */}
         <div className="h-[calc(100vh-140px)] md:h-[calc(100vh-160px)] rounded-2xl bg-neutral-900/60 border border-white/10 p-5 md:p-7 overflow-hidden">
           {/* Header row */}
           <div className="flex items-center justify-between gap-4">
@@ -95,11 +93,15 @@ export default function AdminDashboard() {
 
           {/* Table header pill */}
           <div className="mt-6 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-white/60">
-            <div className="grid grid-cols-[48px_1fr_110px_160px] md:grid-cols-[60px_1fr_140px_200px] items-center">
+            <div className="grid grid-cols-[48px_1fr_90px] md:grid-cols-[60px_1fr_140px_200px] items-center">
               <div>#</div>
-              <div>Product Name</div>
+
+              {/* better wrap on mobile */}
+              <div className="md:hidden">Product</div>
+              <div className="hidden md:block">Product Name</div>
+
               <div className="text-left">Price</div>
-              <div className="text-right">Actions</div>
+              <div className="hidden md:block text-right">Actions</div>
             </div>
           </div>
 
@@ -115,7 +117,7 @@ export default function AdminDashboard() {
                   key={p._id}
                   className="rounded-2xl bg-white/10 border border-white/5 px-4 py-4 md:px-5"
                 >
-                  <div className="grid grid-cols-[48px_1fr_110px_160px] md:grid-cols-[60px_1fr_140px_200px] items-center gap-2">
+                  <div className="grid grid-cols-[48px_1fr_90px] md:grid-cols-[60px_1fr_140px_200px] items-center gap-2">
                     {/* index badge */}
                     <div className="flex items-center justify-center">
                       <div className="h-9 w-9 rounded-full bg-black/30 border border-white/10 flex items-center justify-center text-white/70">
@@ -147,8 +149,8 @@ export default function AdminDashboard() {
                       {p.price.toFixed(2)}
                     </div>
 
-                    {/* actions (desktop) */}
-                    <div className="flex justify-end gap-5 text-sm">
+                    {/* actions (desktop only) */}
+                    <div className="hidden md:flex justify-end gap-5 text-sm">
                       <button
                         onClick={() => handleEdit(p._id)}
                         className="text-white/80 hover:text-white underline underline-offset-4"
@@ -164,21 +166,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
-                  {/* Mobile actions row */}
-                  <div className="mt-3 flex justify-end gap-4 md:hidden">
-                    <button
-                      onClick={() => handleEdit(p._id)}
-                      className="rounded-full bg-white/10 border border-white/10 px-4 py-2 text-xs hover:bg-white/15 transition"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(p._id)}
-                      className="rounded-full bg-white/10 border border-white/10 px-4 py-2 text-xs hover:bg-red-500/20 transition"
-                    >
-                      Delete
-                    </button>
-                  </div>
+                  {/* ✅ No mobile actions row (matches your mockup) */}
                 </div>
               ))
             )}
