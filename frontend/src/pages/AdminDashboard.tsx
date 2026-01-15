@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import ProductModal, { type ProductForm } from "../components/ProductModal";
 
 type Product = {
   _id: string;
@@ -35,18 +36,50 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>(demoProducts);
   const [query, setQuery] = useState("");
 
+  // modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"add" | "edit">("add");
+  const [editing, setEditing] = useState<Product | null>(null);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return products;
     return products.filter((p) => p.title.toLowerCase().includes(q));
   }, [products, query]);
 
-  const handleAdd = () => {
-    alert("Add product (hook up later)");
+  const openAdd = () => {
+    setModalMode("add");
+    setEditing(null);
+    setModalOpen(true);
   };
 
-  const handleEdit = (id: string) => {
-    alert(`Edit product ${id} (hook up later)`);
+  const openEdit = (p: Product) => {
+    setModalMode("edit");
+    setEditing(p);
+    setModalOpen(true);
+  };
+
+  const onSave = (data: ProductForm) => {
+    if (modalMode === "add") {
+      const newProduct: Product = {
+        _id: crypto.randomUUID(),
+        title: data.title,
+        price: data.price,
+        image: data.image,
+      };
+      setProducts((prev) => [newProduct, ...prev]);
+    } else {
+      if (!editing) return;
+      setProducts((prev) =>
+        prev.map((p) =>
+          p._id === editing._id
+            ? { ...p, title: data.title, price: data.price, image: data.image }
+            : p
+        )
+      );
+    }
+
+    setModalOpen(false);
   };
 
   const handleDelete = (id: string) => {
@@ -58,30 +91,24 @@ export default function AdminDashboard() {
   return (
     <div className="h-screen w-full overflow-hidden bg-neutral-950 text-white">
       <div className="h-full w-full px-5 py-8 md:px-10 md:py-10">
-        {/* Title */}
         <div className="mb-6">
           <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">
             Admin Dashboard
           </h1>
         </div>
 
-        {/* Panel */}
         <div className="h-[calc(100vh-140px)] md:h-[calc(100vh-160px)] rounded-2xl bg-neutral-900/60 border border-white/10 p-5 md:p-7 overflow-hidden">
-          {/* Header row */}
           <div className="flex items-center justify-between gap-4">
-            <div>
-              <h2 className="text-xl md:text-2xl font-medium">All Products</h2>
-            </div>
+            <h2 className="text-xl md:text-2xl font-medium">All Products</h2>
 
             <button
-              onClick={handleAdd}
+              onClick={openAdd}
               className="rounded-full bg-purple-600 hover:bg-purple-700 px-6 py-2.5 font-semibold transition"
             >
               Add +
             </button>
           </div>
 
-          {/* Search */}
           <div className="mt-5">
             <input
               value={query}
@@ -91,21 +118,16 @@ export default function AdminDashboard() {
             />
           </div>
 
-          {/* Table header pill */}
           <div className="mt-6 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-white/60">
             <div className="grid grid-cols-[48px_1fr_90px] md:grid-cols-[60px_1fr_140px_200px] items-center">
               <div>#</div>
-
-              {/* better wrap on mobile */}
               <div className="md:hidden">Product</div>
               <div className="hidden md:block">Product Name</div>
-
               <div className="text-left">Price</div>
               <div className="hidden md:block text-right">Actions</div>
             </div>
           </div>
 
-          {/* Rows (only this area scrolls) */}
           <div className="mt-4 h-[calc(100%-190px)] overflow-auto pr-1 space-y-4">
             {filtered.length === 0 ? (
               <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-white/70">
@@ -118,14 +140,12 @@ export default function AdminDashboard() {
                   className="rounded-2xl bg-white/10 border border-white/5 px-4 py-4 md:px-5"
                 >
                   <div className="grid grid-cols-[48px_1fr_90px] md:grid-cols-[60px_1fr_140px_200px] items-center gap-2">
-                    {/* index badge */}
                     <div className="flex items-center justify-center">
                       <div className="h-9 w-9 rounded-full bg-black/30 border border-white/10 flex items-center justify-center text-white/70">
                         {idx + 1}
                       </div>
                     </div>
 
-                    {/* product */}
                     <div className="flex items-center gap-4 min-w-0">
                       <div className="h-12 w-12 rounded-full bg-black/30 border border-white/10 overflow-hidden flex-shrink-0">
                         {p.image ? (
@@ -144,15 +164,13 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    {/* price */}
                     <div className="text-left font-medium text-emerald-400">
                       {p.price.toFixed(2)}
                     </div>
 
-                    {/* actions (desktop only) */}
                     <div className="hidden md:flex justify-end gap-5 text-sm">
                       <button
-                        onClick={() => handleEdit(p._id)}
+                        onClick={() => openEdit(p)}
                         className="text-white/80 hover:text-white underline underline-offset-4"
                       >
                         EDIT
@@ -165,14 +183,29 @@ export default function AdminDashboard() {
                       </button>
                     </div>
                   </div>
-
-                  {/* ✅ No mobile actions row (matches your mockup) */}
                 </div>
               ))
             )}
           </div>
         </div>
       </div>
+
+      <ProductModal
+        open={modalOpen}
+        mode={modalMode}
+        initial={
+          editing
+            ? {
+                _id: editing._id,
+                title: editing.title,
+                price: editing.price,
+                image: editing.image,
+              }
+            : null
+        }
+        onClose={() => setModalOpen(false)}
+        onSave={onSave}
+      />
     </div>
   );
 }
