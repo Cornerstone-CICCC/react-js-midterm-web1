@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import AuthLayout from "../layouts/AuthLayout";
 import { signup } from "../api/user";
 
 export default function Signup() {
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState(""); // optional (you can rename to "name")
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -19,36 +21,50 @@ export default function Signup() {
     setError(null);
 
     if (!email.trim() || !password.trim() || !confirmPassword.trim()) {
-      setError("Please fill in all required fields.");
+      const msg = "Please fill in all required fields.";
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+      const msg = "Password must be at least 6 characters.";
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      const msg = "Passwords do not match.";
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
     try {
       setIsLoading(true);
 
-      // TODO: replace with: await auth.signup({ username, email, password })
-      //await new Promise((res) => setTimeout(res, 600));
-      const newUser = await signup({username, email, password})
+      const newUser = await signup({ username, email, password });
 
-      if(!newUser){
-        console.error("Unable to create new user")
-        return
+      if (!newUser) {
+        const msg = "Unable to create account.";
+        setError(msg);
+        toast.error(msg);
+        return;
       }
 
-      // After signup, usually redirect to login
-      navigate("/login");
-    } catch (err) {
-      setError("Could not create account. Try a different email.");
+      toast.success("Account created successfully!");
+
+      // ✅ SAFE redirect for now (App.tsx only has /, /login, /signup)
+      // Later we can redirect to /products in a small fix commit
+      navigate("/");
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Could not create account. Try a different email.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -63,14 +79,14 @@ export default function Signup() {
       footerLinkTo="/login"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Error */}
+        {/* Error (inline) */}
         {error && (
           <div className="rounded-md border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
             {error}
           </div>
         )}
 
-        {/* Username (optional) */}
+        {/* Username */}
         <div>
           <label className="block text-sm text-white/70 mb-1">Username</label>
           <input
@@ -133,7 +149,7 @@ export default function Signup() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full rounded-full bg-purple-600 hover:bg-purple-700 py-2.5 font-semibold transition"
+          className="w-full rounded-full bg-purple-600 hover:bg-purple-700 py-2.5 font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {isLoading ? "Creating..." : "Create account"}
         </button>
