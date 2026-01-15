@@ -17,8 +17,6 @@ const Products = () => {
   const [products, setProducts] = useState<IProduct[]>([]);
 
   useEffect(() => {
-    console.log(logginUser)
-
     //Fetch products from api/product.ts
     const getProducts = async()=>{
 
@@ -84,6 +82,9 @@ const Products = () => {
 
       console.log("successfully added")
   }
+  useEffect(()=>{
+    console.log(logginUser)
+  },[])
 
   const [searchQuery, setSearchQuery] = useState("");
 
