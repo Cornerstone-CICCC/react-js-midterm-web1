@@ -21,12 +21,14 @@ const App = () => {
           </Route>
              <Route path="/login" element={<Login />} />
              <Route path="/signup" element={<Signup />} />
-                    <Route path="products" element={<Outlet />}>
+            <Route path="products" element={<Outlet />}>
             <Route index element={<Products />} />
             <Route path=":id" element={<ProductDetail />} />
           </Route>
         </Routes>
       </BrowserRouter>
     </UserContextProvider>
+  )
+}
 
 export default App;
