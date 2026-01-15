@@ -4,19 +4,86 @@ import { MdShoppingCart } from "react-icons/md";
 import { useEffect, useState } from "react";
 import type { Product } from "../../types/product.types";
 import { Link } from "react-router-dom";
+import { useUser } from "../../context/user/UseUser";
+import { getAllProducts, type IProduct } from "../../api/products";
+import { createCart } from "../../api/cart";
+import { addCartItem } from "../../api/cartItem";
+import type { CartType } from "../../context/user/UserContext";
 
 const Products = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const {logginUser, activeCartId, setActiveCartId, cart, setCart} = useUser()
+
+  const [products, setProducts] = useState<IProduct[]>([]);
 
   useEffect(() => {
-    const getProducts = async () => {
-      const res = await fetch("https://dummyjson.com/products");
-      const data = await res.json();
-      setProducts(data.products);
-    };
+    console.log(logginUser)
+
+    //Fetch products from api/product.ts
+    const getProducts = async()=>{
+
+      const data = await getAllProducts()
+      console.log(data)
+      setProducts(data)
+    }
 
     getProducts();
   }, []);
+
+  const addCart = async(product:IProduct)=>{
+    const userId = logginUser?._id
+    let cartId = activeCartId?activeCartId:""
+
+    //Check if user logined or nor
+    if(!userId){
+      console.log("user does not exsit")
+      return
+    }
+
+    //chekc id active cart exsit or not. If not then, create new cart
+    if(!activeCartId){
+      const newCart = await createCart(userId)
+
+      if(!newCart){
+        return
+      }
+
+      //define carId
+      cartId = newCart._id
+      //set Active cartId to useContext
+      setActiveCartId(cartId)
+    }
+
+    //Add ptoductId to cartItem table
+    const data = await addCartItem({productId:product._id, cartId})
+
+    if(!data){
+      console.log("Failed to add an item to cart")
+      return
+    }
+
+    //add product to cart in useContext if there are existing items, then increase the quantity
+      setCart(prev =>{
+
+        const updatedCart = [...prev]
+
+        //find matching product in cart
+        const existingitem = updatedCart.find(item => item._id === product._id)
+
+          if(existingitem){
+            existingitem.quantity+= 1
+          }else{
+            const newItem :CartType={
+              ...product,
+              quantity:1
+            } 
+            updatedCart.push(newItem)
+          }
+      
+        return updatedCart
+      })
+
+      console.log("successfully added")
+  }
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -51,13 +118,13 @@ const Products = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {filteredProducts.map((p) => (
             <div
-              key={p.id}
+              key={p._id}
               className="bg-[#3B3B3B] border border-border hover:border-[#A259FF]/50 transition-all duration-300 hover:shadow-lg hover:shadow-[#A259FF]/5 overflow-hidden group cursor-pointer rounded-xl flex flex-col"
             >
-              <Link to={`/products/${p.id}`} className="flex-1 flex flex-col">
+              <Link to={`/products/${p._id}`} className="flex-1 flex flex-col">
                 <div className="aspect-square overflow-hidden bg-[#2B2B2B]">
                   <img
-                    src={p.images[0]}
+                    src={p.image}
                     alt={p.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
@@ -68,18 +135,19 @@ const Products = () => {
                     {p.title}
                   </h3>
 
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => {
+                  {p.rating &&<div className="flex items-center gap-1">
+                    {
+                    [...Array(5)].map((_, i) => {
                       const rating = p.rating;
                       const starIndex = i + 1;
 
-                      if (rating >= starIndex) {
+                      if (rating && rating >= starIndex) {
                         return (
                           <FaStar key={i} className="h-4 w-4 text-[#858584]" />
                         );
                       }
 
-                      if (rating >= starIndex - 0.5) {
+                      if (rating&&rating >= starIndex - 0.5) {
                         return (
                           <FaStarHalfAlt
                             key={i}
@@ -95,7 +163,7 @@ const Products = () => {
                     <span className="text-sm text-[#858584] font-body ml-1">
                       {p.rating}
                     </span>
-                  </div>
+                  </div>}
 
                   <p className="text-xl font-semibold text-[#A259FF] font-body">
                     ${p.price.toFixed(2)}
@@ -109,6 +177,7 @@ const Products = () => {
                     e.preventDefault();
                     e.stopPropagation();
                     // Add to cart logic
+                    addCart(p)
                   }}
                   className="w-full gap-2 bg-[#A259FF] hover:bg-[#A259FF]/90 text-[#FFFFFF] font-medium transition-all hover:shadow-lg hover:shadow-[#A259FF]/20 font-body cursor-pointer rounded-md inline-flex px-4 py-4 justify-center items-center"
                 >

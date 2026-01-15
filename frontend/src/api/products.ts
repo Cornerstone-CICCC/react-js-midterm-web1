@@ -8,6 +8,7 @@ export interface IProduct{
     createdAt?: string,
     price:number,
     stock?:number,
+    rating?:number,
     image:string
     brand:string
 }

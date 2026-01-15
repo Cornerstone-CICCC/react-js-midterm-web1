@@ -80,7 +80,7 @@ export default function Login() {
       if(user.role==="admin"){
         navigate("/") //plz update the route admin dashboard
       }else{
-        navigate("/"); // or "/products" if Miya has that route
+        navigate("/products"); // or "/products" if Miya has that route
       }
     } catch (err) {
       setError("Invalid email or password.");

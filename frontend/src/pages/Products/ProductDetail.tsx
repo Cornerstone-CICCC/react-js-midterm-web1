@@ -1,9 +1,10 @@
 import { FaArrowLeft, FaRegStar, FaStar } from "react-icons/fa6";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import type { IProductDetail } from "../../types/productDetail.types";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaStarHalfAlt } from "react-icons/fa";
 import { MdShoppingCart } from "react-icons/md";
+import { useUser } from "../../context/user/UseUser";
 
 const ProductDetail = () => {
   const [product, setProduct] = useState<IProductDetail | null>(null);
