@@ -11,7 +11,8 @@ import { addCartItem } from "../../api/cartItem";
 import type { CartType } from "../../context/user/UserContext";
 
 const Products = () => {
-  const {logginUser, activeCartId, setActiveCartId, cart, setCart} = useUser()
+  //Import and deconstruct useContext
+  const {logginUser, activeCartId, setActiveCartId, setCart} = useUser()
 
   const [products, setProducts] = useState<IProduct[]>([]);
 
@@ -22,7 +23,6 @@ const Products = () => {
     const getProducts = async()=>{
 
       const data = await getAllProducts()
-      console.log(data)
       setProducts(data)
     }
 

@@ -81,9 +81,11 @@ const login = async(details:IUserLogin)=>{
         }
     }
 
+    //look for active cart
     const cart:ICart|null = await cartService.getByUserId(foundUser._id.toString())
     let cartItems :ICartItem[] =[]
 
+    //if active cart exist then fetch cartItem populated by prodcuct
     if(cart){
         cartItems = await cartItemService.getByCartId(cart._id.toString())
     }
