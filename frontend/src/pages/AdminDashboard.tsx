@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import ProductModal, { type ProductForm } from "../components/ProductModal";
 import { toast } from "react-toastify";
+import AdminLayout from "../layouts/AdminLayout";
 
 type Product = {
   _id: string;
@@ -14,22 +15,17 @@ const demoProducts: Product[] = [
     _id: "1",
     title: "Bag",
     price: 9.99,
-    image:
-      "https://images.unsplash.com/photo-1520975958225-8a8b8f1a0b35?w=200&h=200&fit=crop",
+    
   },
   {
     _id: "2",
     title: "Ruben Carder",
     price: 10.99,
-    image:
-      "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=200&h=200&fit=crop",
   },
   {
     _id: "3",
     title: "Zain Dokidis",
     price: 12.4,
-    image:
-      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&h=200&fit=crop",
   },
 ];
 
@@ -97,15 +93,14 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="h-screen w-full overflow-hidden bg-neutral-950 text-white">
+    <AdminLayout
+      title="Admin Dashboard"
+      subtitle="Manage products and keep your store updated."
+    >
+      {/* Content area (AdminLayout already handles full screen) */}
       <div className="h-full w-full px-5 py-8 md:px-10 md:py-10">
-        <div className="mb-6">
-          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">
-            Admin Dashboard
-          </h1>
-        </div>
-
-        <div className="h-[calc(100vh-140px)] md:h-[calc(100vh-160px)] rounded-2xl bg-neutral-900/60 border border-white/10 p-5 md:p-7 overflow-hidden">
+        {/* Panel (fills remaining height under AdminLayout top bar) */}
+        <div className="h-full rounded-2xl bg-neutral-900/60 border border-white/10 p-5 md:p-7 overflow-hidden">
           <div className="flex items-center justify-between gap-4">
             <h2 className="text-xl md:text-2xl font-medium">All Products</h2>
 
@@ -136,6 +131,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
+          {/* Scroll area */}
           <div className="mt-4 h-[calc(100%-190px)] overflow-auto pr-1 space-y-4">
             {filtered.length === 0 ? (
               <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-white/70">
@@ -196,24 +192,24 @@ export default function AdminDashboard() {
             )}
           </div>
         </div>
-      </div>
 
-      <ProductModal
-        open={modalOpen}
-        mode={modalMode}
-        initial={
-          editing
-            ? {
-                _id: editing._id,
-                title: editing.title,
-                price: editing.price,
-                image: editing.image,
-              }
-            : null
-        }
-        onClose={() => setModalOpen(false)}
-        onSave={onSave}
-      />
-    </div>
+        <ProductModal
+          open={modalOpen}
+          mode={modalMode}
+          initial={
+            editing
+              ? {
+                  _id: editing._id,
+                  title: editing.title,
+                  price: editing.price,
+                  image: editing.image,
+                }
+              : null
+          }
+          onClose={() => setModalOpen(false)}
+          onSave={onSave}
+        />
+      </div>
+    </AdminLayout>
   );
 }
