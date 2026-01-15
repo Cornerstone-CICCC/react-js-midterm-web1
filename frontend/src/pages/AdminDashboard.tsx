@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import ProductModal, { type ProductForm } from "../components/ProductModal";
+import { toast } from "react-toastify";
 
 type Product = {
   _id: string;
@@ -67,9 +68,12 @@ export default function AdminDashboard() {
         price: data.price,
         image: data.image,
       };
+
       setProducts((prev) => [newProduct, ...prev]);
+      toast.success("Product created successfully!");
     } else {
       if (!editing) return;
+
       setProducts((prev) =>
         prev.map((p) =>
           p._id === editing._id
@@ -77,6 +81,8 @@ export default function AdminDashboard() {
             : p
         )
       );
+
+      toast.success("Product updated successfully!");
     }
 
     setModalOpen(false);
@@ -85,7 +91,9 @@ export default function AdminDashboard() {
   const handleDelete = (id: string) => {
     const ok = confirm("Delete this product?");
     if (!ok) return;
+
     setProducts((prev) => prev.filter((p) => p._id !== id));
+    toast.success("Product deleted.");
   };
 
   return (
