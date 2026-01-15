@@ -1,5 +1,5 @@
-import { UserContextProvider } from "./context/user/UserContextProvider"
-import { BrowserRouter,Outlet, Route, Routes } from "react-router-dom";
+import { UserContextProvider } from "./context/user/UserContextProvider";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 
 import Home from "./pages/Home";
 import PageLayout from "./layouts/PageLayout";
@@ -8,8 +8,7 @@ import Signup from "./pages/Signup";
 import Products from "./pages/Products/Products";
 import ProductDetail from "./pages/Products/ProductDetail";
 
-
-type Props = {}
+type Props = {};
 
 const App = () => {
   return (
@@ -18,17 +17,17 @@ const App = () => {
         <Routes>
           <Route path="/" element={<PageLayout />}>
             <Route index element={<Home />} />
-          </Route>
-             <Route path="/login" element={<Login />} />
-             <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="products" element={<Outlet />}>
-            <Route index element={<Products />} />
-            <Route path=":id" element={<ProductDetail />} />
+              <Route index element={<Products />} />
+              <Route path=":id" element={<ProductDetail />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>
     </UserContextProvider>
-  )
-}
+  );
+};
 
 export default App;

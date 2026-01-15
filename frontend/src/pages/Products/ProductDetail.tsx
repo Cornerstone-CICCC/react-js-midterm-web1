@@ -5,18 +5,25 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FaStarHalfAlt } from "react-icons/fa";
 import { MdShoppingCart } from "react-icons/md";
 import { useUser } from "../../context/user/UseUser";
+import { getProductById, type IProduct } from "../../api/products";
+import type { CartType } from "../../context/user/UserContext";
+import { addCartItem } from "../../api/cartItem";
+import { createCart } from "../../api/cart";
 
 const ProductDetail = () => {
-  const [product, setProduct] = useState<IProductDetail | null>(null);
+  const { logginUser, activeCartId, setActiveCartId, setCart } = useUser();
+
+  const [product, setProduct] = useState<IProduct | null>(null);
   const { id } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log(logginUser);
+
     if (!id) return;
 
     const getProduct = async () => {
-      const res = await fetch(`https://dummyjson.com/products/${id}`);
-      const data = await res.json();
+      const data = await getProductById(id);
       setProduct(data);
     };
 
@@ -46,6 +53,61 @@ const ProductDetail = () => {
     );
   }
 
+  const addCart = async (product: IProduct) => {
+    const userId = logginUser?._id;
+    let cartId = activeCartId ? activeCartId : "";
+
+    //Check if user logined or nor
+    if (!userId) {
+      console.log("user does not exsit");
+      return;
+    }
+
+    //chekc id active cart exsit or not. If not then, create new cart
+    if (!activeCartId) {
+      const newCart = await createCart(userId);
+
+      if (!newCart) {
+        return;
+      }
+
+      //define carId
+      cartId = newCart._id;
+      //set Active cartId to useContext
+      setActiveCartId(cartId);
+    }
+
+    //Add ptoductId to cartItem table
+    const data = await addCartItem({ productId: product._id, cartId });
+
+    if (!data) {
+      console.log("Failed to add an item to cart");
+      return;
+    }
+
+    //add product to cart in useContext if there are existing items, then increase the quantity
+    setCart((prev) => {
+      const updatedCart = [...prev];
+
+      //find matching product in cart
+      const existingitem = updatedCart.find((item) => item._id === product._id);
+
+      if (existingitem) {
+        existingitem.quantity += 1;
+      } else {
+        const newItem: CartType = {
+          ...product,
+          quantity: 1,
+        };
+        updatedCart.push(newItem);
+      }
+
+      return updatedCart;
+    });
+
+    console.log("successfully added");
+  };
+
   return (
     <div className="min-h-screen bg-[#2B2B2B] py-8 sm:py-12 lg:py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1440px]">
@@ -61,7 +123,7 @@ const ProductDetail = () => {
           {/* Image */}
           <div className="bg-[#3B3B3B] rounded-2xl overflow-hidden aspect-square">
             <img
-              src={product.images[0]}
+              src={product.image}
               alt={product.title}
               className="w-full h-full object-cover"
             />
@@ -83,27 +145,38 @@ const ProductDetail = () => {
               by <span className="text-[#FFFFFF]">{product.brand}</span>
             </p>
 
-            <div className="flex items-center gap-2">
-              {[...Array(5)].map((_, i) => {
-                const rating = product.rating;
-                const starIndex = i + 1;
+            {product.rating && (
+              <div className="flex items-center gap-2">
+                {[...Array(5)].map((_, i) => {
+                  const rating = product.rating;
+                  const starIndex = i + 1;
 
-                if (rating >= starIndex) {
-                  return <FaStar key={i} className="h-5 w-5 text-[#858584]" />;
-                }
+                  if (!rating) return;
 
-                if (rating >= starIndex - 0.5) {
+                  if (rating >= starIndex) {
+                    return (
+                      <FaStar key={i} className="h-5 w-5 text-[#858584]" />
+                    );
+                  }
+
+                  if (rating >= starIndex - 0.5) {
+                    return (
+                      <FaStarHalfAlt
+                        key={i}
+                        className="h-5 w-5 text-[#858584]"
+                      />
+                    );
+                  }
+
                   return (
-                    <FaStarHalfAlt key={i} className="h-5 w-5 text-[#858584]" />
+                    <FaRegStar key={i} className="h-5 w-5 text-[#858584]" />
                   );
-                }
-
-                return <FaRegStar key={i} className="h-5 w-5 text-[#858584]" />;
-              })}
-              <span className="text-[#858584] font-body ml-1">
-                {product.rating}
-              </span>
-            </div>
+                })}
+                <span className="text-[#858584] font-body ml-1">
+                  {product.rating}
+                </span>
+              </div>
+            )}
 
             <div className="py-4 border-t border-b border-[#3B3B3B]">
               <p className="text-4xl sm:text-5xl font-semibold text-[#A259FF] font-body">
@@ -126,6 +199,7 @@ const ProductDetail = () => {
                   e.preventDefault();
                   e.stopPropagation();
                   // Add to cart logic
+                  addCart(product);
                 }}
                 className="w-full sm:w-auto gap-2 text-base px-8 py-6 bg-[#A259FF] hover:bg-[#A259FF]/90 text-[#FFFFFF] font-medium transition-all hover:shadow-lg hover:shadow:[#A259FF]/20 font-body h-10 rounded-md inline-flex items-center justify-center"
               >
