@@ -1,6 +1,6 @@
 import { UserContextProvider } from "./context/user/UserContextProvider"
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-
+import AdminDashboard from "./pages/AdminDashboard";
 import Home from "./pages/Home";
 import PageLayout from "./layouts/PageLayout";
 import Login from "./pages/Login";
@@ -19,6 +19,7 @@ const App = () => {
           </Route>
              <Route path="/login" element={<Login />} />
              <Route path="/signup" element={<Signup />} />
+             <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </BrowserRouter>
     </UserContextProvider>
