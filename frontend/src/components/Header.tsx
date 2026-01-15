@@ -3,11 +3,29 @@ import { IoMenu } from "react-icons/io5";
 import { FaXmark } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useUser } from "../context/user/UseUser";
+import { logout } from "../api/user";
 
 const Header = () => {
+  const {setLogginUser, setActiveCartId, setCart}= useUser()
   const [mobileMenu, setMobileMenu] = useState(false);
 
   const toggleMenu = () => setMobileMenu(!mobileMenu);
+
+  //logout - clear context/sessionStorage and cookies
+  const handleLogout =async()=>{
+    const res = await logout
+
+    if(!res){
+      console.log("Log out fail")
+      return
+    }
+
+    //If logout success, then clear context/session
+    setLogginUser(null)
+    setActiveCartId(null),
+    setCart([])
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-[#2B2B2B]">
