@@ -3,59 +3,63 @@ import { useNavigate } from "react-router-dom";
 import { FaMinus, FaPlus } from "react-icons/fa6";
 import { LuTrash2 } from "react-icons/lu";
 import { useUser } from "../context/user/UseUser";
-
-const initialCartItems = [
-  {
-    id: 1,
-    title: "Wireless Headphones",
-    price: 89.99,
-    image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&q=80",
-    quantity: 1,
-  },
-  {
-    id: 2,
-    title: "Smart Watch",
-    price: 199.99,
-    image:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&q=80",
-    quantity: 2,
-  },
-  {
-    id: 3,
-    title: "Mechanical Keyboard",
-    price: 129.99,
-    image:
-      "https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?w=300&q=80",
-    quantity: 1,
-  },
-];
+import {
+  getCartItemByUserId,
+  updateCartItem,
+  deleteCartItem,
+} from "../api/cartItem";
+import type { ResultByUserId } from "../api/cartItem";
+import { toast } from "react-toastify";
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState(initialCartItems);
+  const [cartItems, setCartItems] = useState<ResultByUserId[]>([]);
   const navigate = useNavigate();
-  const { cart } = useUser();
+  const { logginUser, cart, setCart } = useUser();
 
   useEffect(() => {
-    console.log(cart);
-  }, []);
+    if (!logginUser?._id) return;
 
-  const updateQuantity = (id: number, delta: number) => {
+    const fetchCart = async () => {
+      const data = await getCartItemByUserId(logginUser._id);
+      setCartItems(data);
+    };
+
+    fetchCart();
+  }, [logginUser]);
+
+  const updateQuantity = async (cartItemId: string, delta: number) => {
+    const target = cartItems.find((item) => item._id === cartItemId);
+    if (!target) return;
+    const newQuantity = Math.max(1, target.quantity + delta);
+    const updated = await updateCartItem(cartItemId, newQuantity);
+    if (!updated) return;
+
     setCartItems((items) =>
       items.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
+        item._id === cartItemId ? { ...item, quantity: newQuantity } : item,
+      ),
+    );
+
+    setCart((prev) =>
+      prev.map((item) =>
+        item.cartItemId === cartItemId
+          ? { ...item, quantity: newQuantity }
           : item,
       ),
     );
   };
 
-  const removeItem = (id: number) => {
-    setCartItems((items) => items.filter((item) => item.id !== id));
+  useEffect(() => {
+    console.log(cart);
+  }, [cart]);
+
+  const removeItem = async (cartItemId: string) => {
+    await deleteCartItem(cartItemId);
+    setCartItems((items) => items.filter((item) => item._id !== cartItemId));
   };
 
   const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + item.products.price * item.quantity,
     0,
   );
 
@@ -87,29 +91,39 @@ const Cart = () => {
             <div className="lg:col-span-2 space-y-4">
               {cartItems.map((item) => (
                 <div
-                  key={item.id}
+                  key={item._id}
                   className="bg-[#3B3B3B] border border-border overflow-hidden rounded-xl"
                 >
                   <div className="p-4 sm:p-6 flex gap-4 sm:gap-6">
                     {/* Image */}
-                    <div className="flex-shrink-0">
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-[#2B2B2B]">
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="w-full h-full object-cover"
-                        />
+                    {item.products.image ? (
+                      <div className="flex-shrink-0">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-[#2B2B2B]">
+                          <img
+                            src={item.products.image}
+                            alt={item.products.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className="flex-shrink-0">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-[#2B2B2B] flex justify-center items-center">
+                          <p className="font-body font-semibold text-[#858584]">
+                            No Image
+                          </p>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Info */}
                     <div className="flex-1 flex flex-col justify-between min-w-0">
                       <div>
                         <h3 className="text-base sm:text-lg font-bold text-[#FFFFFF] mb-2 font-heading">
-                          {item.title}
+                          {item.products.title}
                         </h3>
                         <p className="text-lg sm:text-xl font-semibold text-[#A259FF] font-body">
-                          ${item.price.toFixed(2)}
+                          ${item.products.price.toFixed(2)}
                         </p>
                       </div>
 
@@ -117,7 +131,7 @@ const Cart = () => {
                       <div className="flex items-center gap-3 mt-4">
                         <div className="flex items-center bg-[#3B3B3B] rounded-lg overflow-hidden">
                           <button
-                            onClick={() => updateQuantity(item.id, -1)}
+                            onClick={() => updateQuantity(item._id, -1)}
                             className="p-2 hover:bg-[#2B2B2B] transition-colors"
                           >
                             <FaMinus className="h-4 w-4 text-[#FFFFFF]" />
@@ -126,7 +140,7 @@ const Cart = () => {
                             {item.quantity}
                           </span>
                           <button
-                            onClick={() => updateQuantity(item.id, 1)}
+                            onClick={() => updateQuantity(item._id, 1)}
                             className="p-2 hover:bg-[#2B2B2B] transition-colors"
                           >
                             <FaPlus className="h-4 w-4 text-[#FFFFFF]" />
@@ -138,7 +152,7 @@ const Cart = () => {
                     {/* Delete btn */}
                     <div className="flex-shrink-0">
                       <button
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeItem(item._id)}
                         className="p-2 text-[#858584] hover:text-red-400 transition-colors"
                       >
                         <LuTrash2 className="h-5 w-5" />
@@ -160,14 +174,14 @@ const Cart = () => {
                   <div className="space-y-3">
                     {cartItems.map((item) => (
                       <div
-                        key={item.id}
+                        key={item._id}
                         className="flex justify-between text-sm font-body"
                       >
                         <span className="text-[#858584]">
-                          {item.title} x {item.quantity}
+                          {item.products.title} x {item.quantity}
                         </span>
                         <span className="text-[#858584]">
-                          ${(item.price * item.quantity).toFixed(2)}
+                          ${(item.products.price * item.quantity).toFixed(2)}
                         </span>
                       </div>
                     ))}

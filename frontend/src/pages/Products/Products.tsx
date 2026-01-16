@@ -1,8 +1,8 @@
 import { IoSearch } from "react-icons/io5";
 import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
 import { MdShoppingCart } from "react-icons/md";
 import { useEffect, useState } from "react";
-import type { Product } from "../../types/product.types";
 import { Link } from "react-router-dom";
 import { useUser } from "../../context/user/UseUser";
 import { getAllProducts, type IProduct } from "../../api/products";
@@ -12,8 +12,7 @@ import type { CartType } from "../../context/user/UserContext";
 
 const Products = () => {
   //Import and deconstruct useContext
-  const { logginUser, activeCartId, setActiveCartId, setCart, cart } =
-    useUser();
+  const { logginUser, activeCartId, setActiveCartId, setCart } = useUser();
 
   const [products, setProducts] = useState<IProduct[]>([]);
 
@@ -34,6 +33,7 @@ const Products = () => {
     //Check if user logined or nor
     if (!userId) {
       console.log("user does not exsit");
+      toast.warning("Please log in");
       return;
     }
 
@@ -59,6 +59,8 @@ const Products = () => {
       return;
     }
 
+    const cartItemId = data._id;
+
     //add product to cart in useContext if there are existing items, then increase the quantity
     setCart((prev) => {
       const updatedCart = [...prev];
@@ -72,6 +74,7 @@ const Products = () => {
         const newItem: CartType = {
           ...product,
           quantity: 1,
+          cartItemId,
         };
         updatedCart.push(newItem);
       }
@@ -79,11 +82,11 @@ const Products = () => {
       return updatedCart;
     });
 
-      console.log("successfully added")
-  }
-  useEffect(()=>{
-    console.log(logginUser)
-  },[])
+    console.log("successfully added");
+
+    useEffect(() => {
+      console.log(logginUser);
+    }, []);
     console.log("successfully added");
   };
 
@@ -95,6 +98,7 @@ const Products = () => {
 
   return (
     <div className="min-h-screen bg-[#2B2B2B] py-16 sm:py-20 lg:py-24">
+      <ToastContainer theme="colored" />
       <div className="container max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-12 space-y-8">
           <h1 className="text-4xl sm:text-5xl font-bold text-[#FFFFFF] font-heading">
@@ -124,13 +128,21 @@ const Products = () => {
               className="bg-[#3B3B3B] border border-border hover:border-[#A259FF]/50 transition-all duration-300 hover:shadow-lg hover:shadow-[#A259FF]/5 overflow-hidden group cursor-pointer rounded-xl flex flex-col"
             >
               <Link to={`/products/${p._id}`} className="flex-1 flex flex-col">
-                <div className="aspect-square overflow-hidden bg-[#2B2B2B]">
-                  <img
-                    src={p.image}
-                    alt={p.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
+                {p.image ? (
+                  <div className="aspect-square overflow-hidden bg-[#2B2B2B]">
+                    <img
+                      src={p.image}
+                      alt={p.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                ) : (
+                  <div className="aspect-square overflow-hidden bg-[#2B2B2B] flex justify-center items-center">
+                    <p className="text-xl font-body text-[#858584] font-semibold group-hover:scale-105 transition-transform duration-300">
+                      No Image Provided
+                    </p>
+                  </div>
+                )}
 
                 <div className="p-4 sm:p-5 space-y-3">
                   <h3 className="text-base sm:text-lg font-bold text-[#FFFFFF] font-heading">
