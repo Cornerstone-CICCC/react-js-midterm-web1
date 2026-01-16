@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../layouts/AuthLayout";
 import { useUser } from "../context/user/UseUser";
@@ -7,7 +7,7 @@ import type { CartType } from "../context/user/UserContext";
 
 export default function Login() {
   const navigate = useNavigate();
- const {setLogginUser,setActiveCartId, setCart} = useUser()
+ const {setLogginUser,setActiveCartId, setCart, cart} = useUser()
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,9 +39,12 @@ export default function Login() {
       }
 
       const user = loggedInUser.user
+
       const cartId = loggedInUser.cart? loggedInUser.cart._id:""
-      const initialCartItems:CartType[] = !loggedInUser.cartItem?[]:
-      loggedInUser.cartItem.map((item)=>({
+      const initialCartItems:CartType[] = !loggedInUser.cartItems?[]:
+      loggedInUser.cartItems.map((item)=>(
+        {
+        cartItemId:item._id,
         _id:item.productId._id,
         title:item.productId.title,
         price:item.productId.price,

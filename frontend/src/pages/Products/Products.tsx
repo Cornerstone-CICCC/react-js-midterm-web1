@@ -12,7 +12,7 @@ import type { CartType } from "../../context/user/UserContext";
 
 const Products = () => {
   //Import and deconstruct useContext
-  const {logginUser, activeCartId, setActiveCartId, setCart} = useUser()
+  const {logginUser, activeCartId, setActiveCartId, setCart, cart} = useUser()
 
   const [products, setProducts] = useState<IProduct[]>([]);
 

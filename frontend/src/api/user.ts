@@ -30,7 +30,7 @@ export interface LoginResultType{
     message:string,
     result:{
         cart:ICart,
-        cartItem:LoginResultICartItem[],
+        cartItems:LoginResultICartItem[],
         user:IUser
     }
 }
