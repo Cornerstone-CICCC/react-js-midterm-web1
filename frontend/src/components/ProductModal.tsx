@@ -4,6 +4,8 @@ export type ProductForm = {
   _id?: string;
   title: string;
   price: number;
+  description:string;
+  category:string;
   image?: string;
 };
 
@@ -25,6 +27,8 @@ export default function ProductModal({
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState<string>("0");
   const [image, setImage] = useState("");
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -34,6 +38,8 @@ export default function ProductModal({
     setTitle(initial?.title ?? "");
     setPrice(String(initial?.price ?? 0));
     setImage(initial?.image ?? "");
+    setCategory(initial?.category ?? "");
+    setDescription(initial?.description ?? "");
   }, [open, initial]);
 
   if (!open) return null;
@@ -41,8 +47,8 @@ export default function ProductModal({
   const handleSave = () => {
     setError(null);
 
-    if (!title.trim()) {
-      setError("Title is required.");
+    if (!title.trim()||!category.trim()||!description.trim()) {
+      setError("Require fields missing.");
       return;
     }
 
@@ -57,7 +63,15 @@ export default function ProductModal({
       title: title.trim(),
       price: p,
       image: image.trim() || undefined,
+      category:category,
+      description:description
     });
+
+    setTitle("")
+    setCategory("")
+    setDescription(""),
+    setImage("")
+    setPrice("")
   };
 
   return (
@@ -91,7 +105,8 @@ export default function ProductModal({
 
         <div className="mt-5 space-y-4">
           <div>
-            <label className="block text-sm text-white/70 mb-1">Title</label>
+            <label className="block text-sm text-white/70 mb-1">Title
+            <span className="text-red-500 font-bold te">*</span></label>
             <input
               className="w-full rounded-full bg-white/10 border border-white/10 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-purple-500"
               value={title}
@@ -99,9 +114,31 @@ export default function ProductModal({
               placeholder="Product title"
             />
           </div>
+          <div>
+            <label className="block text-sm text-white/70 mb-1">Description
+            <span className="text-red-500 font-bold">*</span></label>
+            <input
+            type="textarea"
+              className="w-full rounded-full bg-white/10 border border-white/10 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-purple-500"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Product description"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-white/70 mb-1">Category
+            <span className="text-red-500 font-bold">*</span></label>
+            <input
+              className="w-full rounded-full bg-white/10 border border-white/10 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-purple-500"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="Product Category"
+            />
+          </div>
 
           <div>
-            <label className="block text-sm text-white/70 mb-1">Price</label>
+            <label className="block text-sm text-white/70 mb-1">Price
+            <span className="text-red-500 font-bold">*</span></label>
             <input
               type="number"
               step="0.01"

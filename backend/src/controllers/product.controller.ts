@@ -49,7 +49,9 @@ const getProductByQuery = async(req: Request<{},{},{}, {category:string}>, res: 
 const addProduct = async(req: Request<{}, IProduct>, res: Response) => {
   const {title,description,category,price,stock,brand,image}  = req.body
 
-  if(!title||!description||!category||!price ||!brand) return
+  
+
+  if(!title||!description||!category||!price) return
 
   try{
     const newProduct = await productService.add({title,description,category,price,stock,brand,image})
