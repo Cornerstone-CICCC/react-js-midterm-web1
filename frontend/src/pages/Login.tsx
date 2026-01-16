@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import AuthLayout from "../layouts/AuthLayout";
 import { useUser } from "../context/user/UseUser";
 import { login } from "../api/user";
@@ -7,83 +9,94 @@ import type { CartType } from "../context/user/UserContext";
 
 export default function Login() {
   const navigate = useNavigate();
- const {setLogginUser,setActiveCartId, setCart} = useUser()
+  const { setLogginUser, setActiveCartId, setCart } = useUser();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // placeholders (we'll connect to AuthContext later)
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const getErrorMessage = (err: any) => {
+    const msg =
+      err?.response?.data?.message ||
+      err?.response?.data?.error ||
+      err?.message ||
+      "Invalid email or password.";
+    return typeof msg === "string" ? msg : "Invalid email or password.";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    // basic front validation
     if (!email.trim() || !password.trim()) {
-      setError("Please enter your email and password.");
+      const msg = "Please enter your email and password.";
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
     try {
       setIsLoading(true);
 
-      // TODO: replace with: await auth.login(email, password)
-      //await new Promise((res) => setTimeout(res, 600));
-      const data = await login({email, password})
-      const loggedInUser = data?.result
-      if(!loggedInUser){
-        console.error("Log in fail")
-        return
+      const data = await login({ email, password });
+      const loggedInUser = data?.result;
+
+      if (!loggedInUser) {
+        const msg = "Login failed. Please try again.";
+        setError(msg);
+        toast.error(msg);
+        return;
       }
 
-      const user = loggedInUser.user
-      const cartId = loggedInUser.cart? loggedInUser.cart._id:""
-      const initialCartItems:CartType[] = !loggedInUser.cartItem?[]:
-      loggedInUser.cartItem.map((item)=>({
-        _id:item.productId._id,
-        title:item.productId.title,
-        price:item.productId.price,
-        brand:item.productId.brand,
-        category:item.productId.category,
-        description:item.productId.description,
-        image:item.productId.image,
-        stock:item.productId.stock,
-        quantity:item.quantity
-      })
-      )
+      const user = loggedInUser.user;
+      const cartId = loggedInUser.cart ? loggedInUser.cart._id : "";
 
-      setLogginUser(user)
-      setActiveCartId(cartId)
-      //Add stored cart itesm to cart context, if there are existing items, then increase the quantity
-      setCart(prev =>{
+      const initialCartItems: CartType[] = !loggedInUser.cartItem
+        ? []
+        : loggedInUser.cartItem.map((item: any) => ({
+            _id: item.productId._id,
+            title: item.productId.title,
+            price: item.productId.price,
+            brand: item.productId.brand,
+            category: item.productId.category,
+            description: item.productId.description,
+            image: item.productId.image,
+            stock: item.productId.stock,
+            quantity: item.quantity,
+          }));
 
-        const updatedCart = [...prev]
+      setLogginUser(user);
+      setActiveCartId(cartId);
 
-        //Iterate though initialCartItem
-        for(const newItem of initialCartItems){
-          const existingitem = updatedCart.find(item => item._id === newItem._id)
+      setCart((prev) => {
+        const updatedCart = [...prev];
 
-          if(existingitem){
-            existingitem.quantity+= newItem.quantity
-          }else{
-            updatedCart.push(newItem)
-          }
+        for (const newItem of initialCartItems) {
+          const existingItem = updatedCart.find(
+            (item) => item._id === newItem._id
+          );
+
+          if (existingItem) existingItem.quantity += newItem.quantity;
+          else updatedCart.push(newItem);
         }
 
-        //If new product -> add to cart
-        return updatedCart
-      })
+        return updatedCart;
+      });
 
-      // TODO: after real login, redirect based on role (admin -> /admin)
-      if(user.role==="admin"){
-        navigate("/") //plz update the route admin dashboard
-      }else{
-        navigate("/products"); // or "/products" if Miya has that route
+      toast.success("Logged in successfully!");
+
+      // ✅ Redirect based on role
+      if (user?.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/products");
       }
-    } catch (err) {
-      setError("Invalid email or password.");
+    } catch (err: any) {
+      const msg = getErrorMessage(err);
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -98,7 +111,7 @@ export default function Login() {
       footerLinkTo="/signup"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Error */}
+        {/* Error (inline) */}
         {error && (
           <div className="rounded-md border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
             {error}
@@ -139,7 +152,7 @@ export default function Login() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full rounded-full bg-purple-600 hover:bg-purple-700 py-2.5 font-semibold transition"
+          className="w-full rounded-full bg-purple-600 hover:bg-purple-700 py-2.5 font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {isLoading ? "Logging in..." : "Login"}
         </button>
@@ -153,11 +166,10 @@ export default function Login() {
             Back to Home
           </Link>
 
-          {/* Optional: you can later add a /forgot route */}
           <button
             type="button"
             className="text-purple-400 hover:text-purple-300 underline underline-offset-4"
-            onClick={() => setError("Forgot password is not implemented yet.")}
+            onClick={() => toast.info("Forgot password is not implemented yet.")}
           >
             Forgot password?
           </button>
@@ -166,3 +178,4 @@ export default function Login() {
     </AuthLayout>
   );
 }
+

@@ -1,14 +1,13 @@
 import { UserContextProvider } from "./context/user/UserContextProvider";
-import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
-
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminRoute from "./routes/AdminRoute";
 import Home from "./pages/Home";
 import PageLayout from "./layouts/PageLayout";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Products from "./pages/Products/Products";
 import ProductDetail from "./pages/Products/ProductDetail";
-
-type Props = {};
 
 const App = () => {
   return (
@@ -17,13 +16,23 @@ const App = () => {
         <Routes>
           <Route path="/" element={<PageLayout />}>
             <Route index element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="products" element={<Outlet />}>
-              <Route index element={<Products />} />
-              <Route path=":id" element={<ProductDetail />} />
-            </Route>
+            <Route path="products" element={<Products />} />
+            <Route path="products/:id" element={<ProductDetail />} />
           </Route>
+
+          {/* Auth */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+
+          {/* 🔒 Protected admin route */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </UserContextProvider>
@@ -31,3 +40,4 @@ const App = () => {
 };
 
 export default App;
+
