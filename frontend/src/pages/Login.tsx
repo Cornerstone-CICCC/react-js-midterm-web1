@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
 import AuthLayout from "../layouts/AuthLayout";
 import { useUser } from "../context/user/UseUser";
 import { login } from "../api/user";
@@ -17,7 +18,6 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
 
   const getErrorMessage = (err: any) => {
-    // Axios-like: err.response.data.message
     const msg =
       err?.response?.data?.message ||
       err?.response?.data?.error ||
@@ -30,7 +30,6 @@ export default function Login() {
     e.preventDefault();
     setError(null);
 
-    // basic front validation
     if (!email.trim() || !password.trim()) {
       const msg = "Please enter your email and password.";
       setError(msg);
@@ -71,7 +70,6 @@ export default function Login() {
       setLogginUser(user);
       setActiveCartId(cartId);
 
-      // Add stored cart items to cart context, if there are existing items, then increase the quantity
       setCart((prev) => {
         const updatedCart = [...prev];
 
@@ -80,11 +78,8 @@ export default function Login() {
             (item) => item._id === newItem._id
           );
 
-          if (existingItem) {
-            existingItem.quantity += newItem.quantity;
-          } else {
-            updatedCart.push(newItem);
-          }
+          if (existingItem) existingItem.quantity += newItem.quantity;
+          else updatedCart.push(newItem);
         }
 
         return updatedCart;
@@ -92,9 +87,12 @@ export default function Login() {
 
       toast.success("Logged in successfully!");
 
-      // ✅ SAFE redirect for now (App.tsx only has /, /login, /signup)
-      // Later, when /products and /admin routes exist, we can update redirects in a small fix commit.
-      navigate("/");
+      // ✅ Redirect based on role
+      if (user?.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/products");
+      }
     } catch (err: any) {
       const msg = getErrorMessage(err);
       setError(msg);
@@ -180,3 +178,4 @@ export default function Login() {
     </AuthLayout>
   );
 }
+

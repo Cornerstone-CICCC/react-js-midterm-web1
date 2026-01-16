@@ -6,6 +6,8 @@ import Home from "./pages/Home";
 import PageLayout from "./layouts/PageLayout";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Products from "./pages/Products/Products";
+import ProductDetail from "./pages/Products/ProductDetail";
 
 const App = () => {
   return (
@@ -14,8 +16,11 @@ const App = () => {
         <Routes>
           <Route path="/" element={<PageLayout />}>
             <Route index element={<Home />} />
+            <Route path="products" element={<Products />} />
+            <Route path="products/:id" element={<ProductDetail />} />
           </Route>
 
+          {/* Auth */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
@@ -35,3 +40,4 @@ const App = () => {
 };
 
 export default App;
+
