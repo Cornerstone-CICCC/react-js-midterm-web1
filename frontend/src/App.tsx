@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Products from "./pages/Products/Products";
 import ProductDetail from "./pages/Products/ProductDetail";
+import Cart from "./pages/Cart";
 
 type Props = {};
 
@@ -23,6 +24,7 @@ const App = () => {
               <Route index element={<Products />} />
               <Route path=":id" element={<ProductDetail />} />
             </Route>
+            <Route path="cart" element={<Cart />} />
           </Route>
         </Routes>
       </BrowserRouter>

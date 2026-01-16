@@ -7,7 +7,7 @@ import type { CartType } from "../context/user/UserContext";
 
 export default function Login() {
   const navigate = useNavigate();
- const {setLogginUser,setActiveCartId, setCart} = useUser()
+  const { setLogginUser, setActiveCartId, setCart } = useUser();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,55 +31,57 @@ export default function Login() {
 
       // TODO: replace with: await auth.login(email, password)
       //await new Promise((res) => setTimeout(res, 600));
-      const data = await login({email, password})
-      const loggedInUser = data?.result
-      if(!loggedInUser){
-        console.error("Log in fail")
-        return
+      const data = await login({ email, password });
+      const loggedInUser = data?.result;
+      if (!loggedInUser) {
+        console.error("Log in fail");
+        return;
       }
 
-      const user = loggedInUser.user
-      const cartId = loggedInUser.cart? loggedInUser.cart._id:""
-      const initialCartItems:CartType[] = !loggedInUser.cartItem?[]:
-      loggedInUser.cartItem.map((item)=>({
-        _id:item.productId._id,
-        title:item.productId.title,
-        price:item.productId.price,
-        brand:item.productId.brand,
-        category:item.productId.category,
-        description:item.productId.description,
-        image:item.productId.image,
-        stock:item.productId.stock,
-        quantity:item.quantity
-      })
-      )
+      const user = loggedInUser.user;
+      const cartId = loggedInUser.cart ? loggedInUser.cart._id : "";
+      const initialCartItems: CartType[] = !loggedInUser.cartItems
+        ? []
+        : loggedInUser.cartItems.map((item) => ({
+            cartItemId: item._id,
+            _id: item.productId._id,
+            title: item.productId.title,
+            price: item.productId.price,
+            brand: item.productId.brand,
+            category: item.productId.category,
+            description: item.productId.description,
+            image: item.productId.image,
+            stock: item.productId.stock,
+            quantity: item.quantity,
+          }));
 
-      setLogginUser(user)
-      setActiveCartId(cartId)
+      setLogginUser(user);
+      setActiveCartId(cartId);
       //Add stored cart itesm to cart context, if there are existing items, then increase the quantity
-      setCart(prev =>{
-
-        const updatedCart = [...prev]
+      setCart((prev) => {
+        const updatedCart = [...prev];
 
         //Iterate though initialCartItem
-        for(const newItem of initialCartItems){
-          const existingitem = updatedCart.find(item => item._id === newItem._id)
+        for (const newItem of initialCartItems) {
+          const existingitem = updatedCart.find(
+            (item) => item._id === newItem._id,
+          );
 
-          if(existingitem){
-            existingitem.quantity+= newItem.quantity
-          }else{
-            updatedCart.push(newItem)
+          if (existingitem) {
+            existingitem.quantity += newItem.quantity;
+          } else {
+            updatedCart.push(newItem);
           }
         }
 
         //If new product -> add to cart
-        return updatedCart
-      })
+        return updatedCart;
+      });
 
       // TODO: after real login, redirect based on role (admin -> /admin)
-      if(user.role==="admin"){
-        navigate("/") //plz update the route admin dashboard
-      }else{
+      if (user.role === "admin") {
+        navigate("/"); //plz update the route admin dashboard
+      } else {
         navigate("/products"); // or "/products" if Miya has that route
       }
     } catch (err) {
