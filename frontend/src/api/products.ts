@@ -76,7 +76,9 @@ export const updateProductById = async(prodcutId:string,data:Partial<IProduct>):
 }
 
 export const addProduct = async(productData:Partial<IProduct>):Promise<IProduct| null>=>{
+    
     try{
+        console.log(productData)
         const res = await fetch(`${endpoint}/products`,{
             method:"POST",
             credentials: "include",
@@ -86,11 +88,15 @@ export const addProduct = async(productData:Partial<IProduct>):Promise<IProduct|
             body:JSON.stringify(productData)
         })
 
+        console.log(res)
+
+
         if(!res.ok){
             console.error("Failed to create products")
         }
 
         const newProduct:IProduct = await res.json()
+        console.log(newProduct)
 
         return newProduct
     }catch(err){

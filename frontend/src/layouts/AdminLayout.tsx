@@ -70,12 +70,12 @@ export default function AdminLayout({
                 </div>
               </div>
 
-              <button
+              {/* <button
                 onClick={handleLogout}
                 className="rounded-full bg-purple-600 hover:bg-purple-700 px-4 py-2 text-sm font-semibold transition"
               >
                 Logout
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
