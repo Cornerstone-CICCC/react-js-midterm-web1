@@ -12,79 +12,80 @@ import type { CartType } from "../../context/user/UserContext";
 
 const Products = () => {
   //Import and deconstruct useContext
-  const {logginUser, activeCartId, setActiveCartId, setCart} = useUser()
+  const { logginUser, activeCartId, setActiveCartId, setCart, cart } =
+    useUser();
 
   const [products, setProducts] = useState<IProduct[]>([]);
 
   useEffect(() => {
     //Fetch products from api/product.ts
-    const getProducts = async()=>{
-
-      const data = await getAllProducts()
-      setProducts(data)
-    }
+    const getProducts = async () => {
+      const data = await getAllProducts();
+      setProducts(data);
+    };
 
     getProducts();
   }, []);
 
-  const addCart = async(product:IProduct)=>{
-    const userId = logginUser?._id
-    let cartId = activeCartId?activeCartId:""
+  const addCart = async (product: IProduct) => {
+    const userId = logginUser?._id;
+    let cartId = activeCartId ? activeCartId : "";
 
     //Check if user logined or nor
-    if(!userId){
-      console.log("user does not exsit")
-      return
+    if (!userId) {
+      console.log("user does not exsit");
+      return;
     }
 
     //chekc id active cart exsit or not. If not then, create new cart
-    if(!activeCartId){
-      const newCart = await createCart(userId)
+    if (!activeCartId) {
+      const newCart = await createCart(userId);
 
-      if(!newCart){
-        return
+      if (!newCart) {
+        return;
       }
 
       //define carId
-      cartId = newCart._id
+      cartId = newCart._id;
       //set Active cartId to useContext
-      setActiveCartId(cartId)
+      setActiveCartId(cartId);
     }
 
     //Add ptoductId to cartItem table
-    const data = await addCartItem({productId:product._id, cartId})
+    const data = await addCartItem({ productId: product._id, cartId });
 
-    if(!data){
-      console.log("Failed to add an item to cart")
-      return
+    if (!data) {
+      console.log("Failed to add an item to cart");
+      return;
     }
 
     //add product to cart in useContext if there are existing items, then increase the quantity
-      setCart(prev =>{
+    setCart((prev) => {
+      const updatedCart = [...prev];
 
-        const updatedCart = [...prev]
+      //find matching product in cart
+      const existingitem = updatedCart.find((item) => item._id === product._id);
 
-        //find matching product in cart
-        const existingitem = updatedCart.find(item => item._id === product._id)
+      if (existingitem) {
+        existingitem.quantity += 1;
+      } else {
+        const newItem: CartType = {
+          ...product,
+          quantity: 1,
+        };
+        updatedCart.push(newItem);
+      }
 
-          if(existingitem){
-            existingitem.quantity+= 1
-          }else{
-            const newItem :CartType={
-              ...product,
-              quantity:1
-            } 
-            updatedCart.push(newItem)
-          }
-      
-        return updatedCart
-      })
+      return updatedCart;
+    });
 
       console.log("successfully added")
   }
   useEffect(()=>{
     console.log(logginUser)
   },[])
+    console.log("successfully added");
+  };
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -136,35 +137,42 @@ const Products = () => {
                     {p.title}
                   </h3>
 
-                  {p.rating &&<div className="flex items-center gap-1">
-                    {
-                    [...Array(5)].map((_, i) => {
-                      const rating = p.rating;
-                      const starIndex = i + 1;
+                  {p.rating && (
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => {
+                        const rating = p.rating;
+                        const starIndex = i + 1;
 
-                      if (rating && rating >= starIndex) {
-                        return (
-                          <FaStar key={i} className="h-4 w-4 text-[#858584]" />
-                        );
-                      }
+                        if (rating && rating >= starIndex) {
+                          return (
+                            <FaStar
+                              key={i}
+                              className="h-4 w-4 text-[#858584]"
+                            />
+                          );
+                        }
 
-                      if (rating&&rating >= starIndex - 0.5) {
+                        if (rating && rating >= starIndex - 0.5) {
+                          return (
+                            <FaStarHalfAlt
+                              key={i}
+                              className="h-4 w-4 text-[#858584]"
+                            />
+                          );
+                        }
+
                         return (
-                          <FaStarHalfAlt
+                          <FaRegStar
                             key={i}
                             className="h-4 w-4 text-[#858584]"
                           />
                         );
-                      }
-
-                      return (
-                        <FaRegStar key={i} className="h-4 w-4 text-[#858584]" />
-                      );
-                    })}
-                    <span className="text-sm text-[#858584] font-body ml-1">
-                      {p.rating}
-                    </span>
-                  </div>}
+                      })}
+                      <span className="text-sm text-[#858584] font-body ml-1">
+                        {p.rating}
+                      </span>
+                    </div>
+                  )}
 
                   <p className="text-xl font-semibold text-[#A259FF] font-body">
                     ${p.price.toFixed(2)}
@@ -178,7 +186,7 @@ const Products = () => {
                     e.preventDefault();
                     e.stopPropagation();
                     // Add to cart logic
-                    addCart(p)
+                    addCart(p);
                   }}
                   className="w-full gap-2 bg-[#A259FF] hover:bg-[#A259FF]/90 text-[#FFFFFF] font-medium transition-all hover:shadow-lg hover:shadow-[#A259FF]/20 font-body cursor-pointer rounded-md inline-flex px-4 py-4 justify-center items-center"
                 >

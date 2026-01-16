@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Products from "./pages/Products/Products";
 import ProductDetail from "./pages/Products/ProductDetail";
+import Cart from "./pages/Cart";
 
 const App = () => {
   return (
@@ -16,8 +17,13 @@ const App = () => {
         <Routes>
           <Route path="/" element={<PageLayout />}>
             <Route index element={<Home />} />
-            <Route path="products" element={<Products />} />
-            <Route path="products/:id" element={<ProductDetail />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="products" element={<Outlet />}>
+              <Route index element={<Products />} />
+              <Route path=":id" element={<ProductDetail />} />
+            </Route>
+            <Route path="cart" element={<Cart />} />
           </Route>
 
           {/* Auth */}

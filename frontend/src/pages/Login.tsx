@@ -52,10 +52,10 @@ export default function Login() {
 
       const user = loggedInUser.user;
       const cartId = loggedInUser.cart ? loggedInUser.cart._id : "";
-
-      const initialCartItems: CartType[] = !loggedInUser.cartItem
+      const initialCartItems: CartType[] = !loggedInUser.cartItems
         ? []
-        : loggedInUser.cartItem.map((item: any) => ({
+        : loggedInUser.cartItems.map((item) => ({
+            cartItemId: item._id,
             _id: item.productId._id,
             title: item.productId.title,
             price: item.productId.price,
