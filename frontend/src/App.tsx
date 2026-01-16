@@ -1,14 +1,15 @@
 import { UserContextProvider } from "./context/user/UserContextProvider";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminRoute from "./routes/AdminRoute";
 import Home from "./pages/Home";
 import PageLayout from "./layouts/PageLayout";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Products from "./pages/Products/Products";
+
 import ProductDetail from "./pages/Products/ProductDetail";
 import Cart from "./pages/Cart";
+import Products from "./pages/Products/Products";
 
 const App = () => {
   return (
@@ -46,4 +47,3 @@ const App = () => {
 };
 
 export default App;
-

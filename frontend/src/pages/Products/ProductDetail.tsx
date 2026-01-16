@@ -9,6 +9,7 @@ import { getProductById, type IProduct } from "../../api/products";
 import type { CartType } from "../../context/user/UserContext";
 import { addCartItem } from "../../api/cartItem";
 import { createCart } from "../../api/cart";
+import { toast, ToastContainer } from "react-toastify";
 
 const ProductDetail = () => {
   const { logginUser, activeCartId, setActiveCartId, setCart } = useUser();
@@ -60,6 +61,7 @@ const ProductDetail = () => {
     //Check if user logined or nor
     if (!userId) {
       console.log("user does not exsit");
+      toast.warning("Please log in");
       return;
     }
 
@@ -85,6 +87,8 @@ const ProductDetail = () => {
       return;
     }
 
+    const cartItemId = data._id;
+
     //add product to cart in useContext if there are existing items, then increase the quantity
     setCart((prev) => {
       const updatedCart = [...prev];
@@ -97,6 +101,7 @@ const ProductDetail = () => {
       } else {
         const newItem: CartType = {
           ...product,
+          cartItemId,
           quantity: 1,
         };
         updatedCart.push(newItem);
@@ -110,6 +115,7 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-[#2B2B2B] py-8 sm:py-12 lg:py-16">
+      <ToastContainer theme="colored" />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1440px]">
         <button
           onClick={handleBack}
@@ -121,13 +127,19 @@ const ProductDetail = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Image */}
-          <div className="bg-[#3B3B3B] rounded-2xl overflow-hidden aspect-square">
-            <img
-              src={product.image}
-              alt={product.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
+          {product.image ? (
+            <div className="bg-[#3B3B3B] rounded-2xl overflow-hidden aspect-square">
+              <img
+                src={product.image}
+                alt={product.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ) : (
+            <div className="bg-[#3B3B3B] rounded-2xl overflow-hidden aspect-square flex justify-center items-center md:text-5xl text-xl font-body font-semibold text-[#858584]">
+              No Image Provided
+            </div>
+          )}
 
           {/* Product Info */}
           <div className="space-y-6">

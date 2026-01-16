@@ -2,30 +2,35 @@ import { MdShoppingCart } from "react-icons/md";
 import { IoMenu } from "react-icons/io5";
 import { FaXmark } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "../context/user/UseUser";
 import { logout } from "../api/user";
 
 const Header = () => {
-  const {setLogginUser, setActiveCartId, setCart}= useUser()
+  const { setLogginUser, logginUser, setActiveCartId, setCart, cart } =
+    useUser();
   const [mobileMenu, setMobileMenu] = useState(false);
 
   const toggleMenu = () => setMobileMenu(!mobileMenu);
 
-  //logout - clear context/sessionStorage and cookies
-  const handleLogout =async()=>{
-    const res = await logout
+  //Cart
+  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
-    if(!res){
-      console.log("Log out fail")
-      return
+  //logout - clear context/sessionStorage and cookies
+  const handleLogout = async () => {
+    const res = await logout;
+
+    if (!res) {
+      console.log("Log out fail");
+      return;
     }
 
     //If logout success, then clear context/session
-    setLogginUser(null)
-    setActiveCartId(null),
-    setCart([])
-  }
+    setLogginUser(null);
+    (setActiveCartId(null), setCart([]));
+  };
+
+  useEffect(() => {}, [cart]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-[#2B2B2B]">
@@ -46,21 +51,37 @@ const Header = () => {
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/login"
-                  className="hidden md:inline-flex items-center justify-center rounded-lg bg-[#A259FF] px-4 py-2 text-sm font-medium transition-colors hover:bg-[#A259FF]/90"
-                >
-                  Login
-                </Link>
+                {logginUser ? (
+                  <Link
+                    to="/"
+                    onClick={handleLogout}
+                    className="hidden md:inline-flex items-center justify-center rounded-lg bg-[#A259FF] px-4 py-2 text-sm font-medium transition-colors hover:bg-[#A259FF]/90"
+                  >
+                    Logout
+                  </Link>
+                ) : (
+                  <Link
+                    to="/login"
+                    className="hidden md:inline-flex items-center justify-center rounded-lg bg-[#A259FF] px-4 py-2 text-sm font-medium transition-colors hover:bg-[#A259FF]/90"
+                  >
+                    Login
+                  </Link>
+                )}
               </li>
             </menu>
           </nav>
-          <button className="hidden md:flex relative p-2 text-[#FFFFFF] hover:bg-[#3B3B3B] rounded-lg transition-colors">
+          <Link
+            to="/cart"
+            className="hidden md:flex relative p-2 text-[#FFFFFF] hover:bg-[#3B3B3B] rounded-lg transition-colors"
+          >
             <MdShoppingCart className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-[#A259FF] text-xs flex items-center justify-center font-medium">
-              0
+
+            <span
+              className={`absolute -top-1 -right-1 h-5 w-5 rounded-full bg-[#A259FF] text-xs flex items-center justify-center font-medium ${cartCount === 0 && "hidden"}`}
+            >
+              {cartCount}
             </span>
-          </button>
+          </Link>
 
           {/* Mobile burger menu */}
           <button
@@ -97,19 +118,31 @@ const Header = () => {
                   onClick={toggleMenu}
                 >
                   <MdShoppingCart className="h-5 w-5" /> Cart{" "}
-                  <span className="h-5 w-5 rounded-full flex items-center justify-center bg-[#A259FF] text-[#FFFFFF] text-xs font-medium">
-                    0
+                  <span
+                    className={`h-5 w-5 rounded-full flex items-center justify-center bg-[#A259FF] text-[#FFFFFF] text-xs font-medium ${cartCount === 0 && "hidden"}`}
+                  >
+                    {cartCount}
                   </span>
                 </Link>
               </li>
               <li className="pt-4 border-t border-border">
-                <Link
-                  to="/login"
-                  className="w-full inline-flex items-center justify-center rounded-lg bg-[#A259FF] px-4 py-2 text-sm font-medium transition-colors hover:bg-[#A259FF]/90"
-                  onClick={toggleMenu}
-                >
-                  Login
-                </Link>
+                {logginUser ? (
+                  <Link
+                    to="/"
+                    onClick={handleLogout}
+                    className="hidden md:inline-flex items-center justify-center rounded-lg bg-[#A259FF] px-4 py-2 text-sm font-medium transition-colors hover:bg-[#A259FF]/90"
+                  >
+                    Logout
+                  </Link>
+                ) : (
+                  <Link
+                    to="/login"
+                    className="w-full inline-flex items-center justify-center rounded-lg bg-[#A259FF] px-4 py-2 text-sm font-medium transition-colors hover:bg-[#A259FF]/90"
+                    onClick={toggleMenu}
+                  >
+                    Login
+                  </Link>
+                )}
               </li>
             </menu>
           </nav>
