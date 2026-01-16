@@ -18,8 +18,6 @@ const Products = () => {
   const [products, setProducts] = useState<IProduct[]>([]);
 
   useEffect(() => {
-    console.log(cart);
-
     //Fetch products from api/product.ts
     const getProducts = async () => {
       const data = await getAllProducts();
@@ -81,6 +79,11 @@ const Products = () => {
       return updatedCart;
     });
 
+      console.log("successfully added")
+  }
+  useEffect(()=>{
+    console.log(logginUser)
+  },[])
     console.log("successfully added");
   };
 
