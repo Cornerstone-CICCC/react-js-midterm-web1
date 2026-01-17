@@ -2,15 +2,21 @@ import { useEffect, useMemo, useState } from "react";
 import ProductModal, { type ProductForm } from "../components/ProductModal";
 import { toast } from "react-toastify";
 import AdminLayout from "../layouts/AdminLayout";
-import { addProduct, deleteProduct, getAllProducts, updateProductById, type IProduct } from "../api/products";
+import {
+  addProduct,
+  deleteProduct,
+  getAllProducts,
+  updateProductById,
+  type IProduct,
+} from "../api/products";
 
 type Product = {
   _id: string;
   title: string;
   price: number;
   image?: string;
-  category:string;
-  description:string;
+  category: string;
+  description: string;
 };
 
 // const demoProducts: Product[] = [
@@ -18,7 +24,7 @@ type Product = {
 //     _id: "1",
 //     title: "Bag",
 //     price: 9.99,
-    
+
 //   },
 //   {
 //     _id: "2",
@@ -35,7 +41,7 @@ type Product = {
 export default function AdminDashboard() {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [query, setQuery] = useState("");
-  const [update, setUpdate]= useState(false)
+  const [update, setUpdate] = useState(false);
   // modal state
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
@@ -47,13 +53,13 @@ export default function AdminDashboard() {
     return products.filter((p) => p.title.toLowerCase().includes(q));
   }, [products, query]);
 
-  const fetchProducts = async()=>{
-    const data = await getAllProducts()
+  const fetchProducts = async () => {
+    const data = await getAllProducts();
 
-    if(!data) return
+    if (!data) return;
 
-    setProducts(data)
-  }
+    setProducts(data);
+  };
 
   const openAdd = () => {
     setModalMode("add");
@@ -68,26 +74,26 @@ export default function AdminDashboard() {
   };
 
   //Handle create and update
-  const onSave =async(data: ProductForm) => {
-    if(!data) return
+  const onSave = async (data: ProductForm) => {
+    if (!data) return;
 
-    const {_id, title, price, description, category, image} = data
+    const { _id, title, price, description, category, image } = data;
     if (modalMode === "add") {
       const newProduct: Partial<IProduct> = {
         title,
         price,
         description,
         category,
-        image
+        image,
       };
 
       //create
-      const result = await addProduct(newProduct)
+      const result = await addProduct(newProduct);
 
-      if(!result){
-        console.log("Unable to create product")
+      if (!result) {
+        console.log("Unable to create product");
         toast.error("Unable to create product");
-        return
+        return;
       }
 
       setProducts((prev) => [result, ...prev]);
@@ -95,43 +101,43 @@ export default function AdminDashboard() {
     } else {
       if (!editing) return;
 
-      if(!_id){
-        console.log("Product id is missing")
-        return
+      if (!_id) {
+        console.log("Product id is missing");
+        return;
       }
 
-      const updates ={
+      const updates = {
         title,
         category,
         description,
         image,
-        price
-      }
+        price,
+      };
 
       //update product
-      const result = await updateProductById(_id,updates )
+      const result = await updateProductById(_id, updates);
 
-      if(!result){
-        toast.error("Failed to update product")
-        return
+      if (!result) {
+        toast.error("Failed to update product");
+        return;
       }
 
       setProducts((prev) =>
         prev.map((p) =>
           p._id === result._id
-            ? 
-            { ...p, 
-              title, 
-              price, 
-              image:image?image:"",
-              category,
-              description
-             }
-            : p
-        )
+            ? {
+                ...p,
+                title,
+                price,
+                image: image ? image : "",
+                category,
+                description,
+              }
+            : p,
+        ),
       );
 
-      setUpdate(prev =>!prev)
+      setUpdate((prev) => !prev);
       toast.success("Product updated successfully!");
     }
 
@@ -139,15 +145,15 @@ export default function AdminDashboard() {
   };
 
   //Handle delete
-  const handleDelete =async (id: string) => {
+  const handleDelete = async (id: string) => {
     const ok = confirm("Delete this product?");
     if (!ok) return;
 
-    const deletedProduct = await deleteProduct(id)
+    const deletedProduct = await deleteProduct(id);
 
-    if(!deletedProduct){
-      toast.error("Unable to delete Product, please try again")
-      return
+    if (!deletedProduct) {
+      toast.error("Unable to delete Product, please try again");
+      return;
     }
 
     setProducts((prev) => prev.filter((p) => p._id !== id));
@@ -155,9 +161,9 @@ export default function AdminDashboard() {
   };
 
   //First load
-  useEffect(()=>{
-    fetchProducts()
-  },[update])
+  useEffect(() => {
+    fetchProducts();
+  }, [update]);
   return (
     <AdminLayout
       title="Admin Dashboard"
@@ -172,7 +178,7 @@ export default function AdminDashboard() {
 
             <button
               onClick={openAdd}
-              className="rounded-full bg-[#A259FF] hover:bg-purple-700 px-6 py-2.5 font-semibold transition"
+              className="rounded-full bg-[#A259FF] hover:bg-[#A259FF]/90 px-6 py-2.5 font-semibold transition"
             >
               Add +
             </button>
@@ -183,7 +189,7 @@ export default function AdminDashboard() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search product..."
-              className="w-full rounded-full bg-white/10 border border-white/10 px-5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full rounded-full bg-white/10 border border-white/10 px-5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#A259FF]"
             />
           </div>
 
@@ -224,10 +230,11 @@ export default function AdminDashboard() {
                             alt={p.title}
                             className="h-full w-full object-cover"
                           />
-                        ) : <div
-                        className="bg-[#3B3B3B] text-[#858584] text-xs text-center self-center h-12 w-12 border border-white/10 rounded-full ">
-                          No Image
-                          </div>}
+                        ) : (
+                          <div className="bg-[#3B3B3B] text-[#858584] text-xs text-center self-center h-12 w-12 border border-white/10 rounded-full ">
+                            No Image
+                          </div>
+                        )}
                       </div>
                       <div className="min-w-0">
                         <div className="font-semibold truncate">{p.title}</div>
@@ -272,9 +279,8 @@ export default function AdminDashboard() {
                   title: editing.title,
                   price: editing.price,
                   image: editing.image,
-                  category:editing.category,
-                  description:editing.description
-
+                  category: editing.category,
+                  description: editing.description,
                 }
               : null
           }

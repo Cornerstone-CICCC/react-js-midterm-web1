@@ -4,8 +4,8 @@ export type ProductForm = {
   _id?: string;
   title: string;
   price: number;
-  description:string;
-  category:string;
+  description: string;
+  category: string;
   image?: string;
 };
 
@@ -47,7 +47,7 @@ export default function ProductModal({
   const handleSave = () => {
     setError(null);
 
-    if (!title.trim()||!category.trim()||!description.trim()) {
+    if (!title.trim() || !category.trim() || !description.trim()) {
       setError("Require fields missing.");
       return;
     }
@@ -63,15 +63,14 @@ export default function ProductModal({
       title: title.trim(),
       price: p,
       image: image.trim() || undefined,
-      category:category,
-      description:description
+      category: category,
+      description: description,
     });
 
-    setTitle("")
-    setCategory("")
-    setDescription(""),
-    setImage("")
-    setPrice("")
+    setTitle("");
+    setCategory("");
+    (setDescription(""), setImage(""));
+    setPrice("");
   };
 
   return (
@@ -105,8 +104,10 @@ export default function ProductModal({
 
         <div className="mt-5 space-y-4">
           <div>
-            <label className="block text-sm text-white/70 mb-1">Title
-            <span className="text-red-500 font-bold te">*</span></label>
+            <label className="block text-sm text-white/70 mb-1">
+              Title
+              <span className="text-red-500 font-bold te">*</span>
+            </label>
             <input
               className="w-full rounded-full bg-white/10 border border-white/10 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-purple-500"
               value={title}
@@ -115,10 +116,12 @@ export default function ProductModal({
             />
           </div>
           <div>
-            <label className="block text-sm text-white/70 mb-1">Description
-            <span className="text-red-500 font-bold">*</span></label>
+            <label className="block text-sm text-white/70 mb-1">
+              Description
+              <span className="text-red-500 font-bold">*</span>
+            </label>
             <input
-            type="textarea"
+              type="textarea"
               className="w-full rounded-full bg-white/10 border border-white/10 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-purple-500"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -126,8 +129,10 @@ export default function ProductModal({
             />
           </div>
           <div>
-            <label className="block text-sm text-white/70 mb-1">Category
-            <span className="text-red-500 font-bold">*</span></label>
+            <label className="block text-sm text-white/70 mb-1">
+              Category
+              <span className="text-red-500 font-bold">*</span>
+            </label>
             <input
               className="w-full rounded-full bg-white/10 border border-white/10 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-purple-500"
               value={category}
@@ -137,8 +142,10 @@ export default function ProductModal({
           </div>
 
           <div>
-            <label className="block text-sm text-white/70 mb-1">Price
-            <span className="text-red-500 font-bold">*</span></label>
+            <label className="block text-sm text-white/70 mb-1">
+              Price
+              <span className="text-red-500 font-bold">*</span>
+            </label>
             <input
               type="number"
               step="0.01"
@@ -172,7 +179,7 @@ export default function ProductModal({
 
           <button
             onClick={handleSave}
-            className="rounded-full bg-purple-600 hover:bg-purple-700 px-6 py-2.5 text-sm font-semibold transition"
+            className="rounded-full bg-[#A259FF] hover:bg-[#A259FF]/90 px-6 py-2.5 text-sm font-semibold transition"
           >
             {mode === "add" ? "Create" : "Save"}
           </button>

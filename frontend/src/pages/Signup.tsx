@@ -56,55 +56,53 @@ export default function Signup() {
         return;
       }
 
-            const data = await login({ email, password });
-            const loggedInUser = data?.result;
-      
-            if (!loggedInUser) {
-              const msg = "Login failed. Please try again.";
-              setError(msg);
-              toast.error(msg);
-              return;
-            }
-      
-            const user = loggedInUser.user;
-            const cartId = loggedInUser.cart ? loggedInUser.cart._id : "";
-            const initialCartItems: CartType[] = !loggedInUser.cartItems
-              ? []
-              : loggedInUser.cartItems.map((item) => ({
-                  cartItemId: item._id,
-                  _id: item.productId._id,
-                  title: item.productId.title,
-                  price: item.productId.price,
-                  brand: item.productId.brand,
-                  category: item.productId.category,
-                  description: item.productId.description,
-                  image: item.productId.image,
-                  stock: item.productId.stock,
-                  quantity: item.quantity,
-                }));
-      
-            setLogginUser(user);
-            setActiveCartId(cartId);
-      
-            setCart((prev) => {
-              const updatedCart = [...prev];
-      
-              for (const newItem of initialCartItems) {
-                const existingItem = updatedCart.find(
-                  (item) => item._id === newItem._id
-                );
-      
-                if (existingItem) existingItem.quantity += newItem.quantity;
-                else updatedCart.push(newItem);
-              }
-      
-              return updatedCart;
-            });
-            
-            toast.success("Logged in successfully!");
+      const data = await login({ email, password });
+      const loggedInUser = data?.result;
 
-      // ✅ SAFE redirect for now (App.tsx only has /, /login, /signup)
-      // Later we can redirect to /products in a small fix commit
+      if (!loggedInUser) {
+        const msg = "Login failed. Please try again.";
+        setError(msg);
+        toast.error(msg);
+        return;
+      }
+
+      const user = loggedInUser.user;
+      const cartId = loggedInUser.cart ? loggedInUser.cart._id : "";
+      const initialCartItems: CartType[] = !loggedInUser.cartItems
+        ? []
+        : loggedInUser.cartItems.map((item) => ({
+            cartItemId: item._id,
+            _id: item.productId._id,
+            title: item.productId.title,
+            price: item.productId.price,
+            brand: item.productId.brand,
+            category: item.productId.category,
+            description: item.productId.description,
+            image: item.productId.image,
+            stock: item.productId.stock,
+            quantity: item.quantity,
+          }));
+
+      setLogginUser(user);
+      setActiveCartId(cartId);
+
+      setCart((prev) => {
+        const updatedCart = [...prev];
+
+        for (const newItem of initialCartItems) {
+          const existingItem = updatedCart.find(
+            (item) => item._id === newItem._id,
+          );
+
+          if (existingItem) existingItem.quantity += newItem.quantity;
+          else updatedCart.push(newItem);
+        }
+
+        return updatedCart;
+      });
+
+      toast.success("Logged in successfully!");
+
       navigate("/products");
     } catch (err: any) {
       const msg =
@@ -197,7 +195,7 @@ export default function Signup() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full rounded-full bg-purple-600 hover:bg-purple-700 py-2.5 font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full rounded-full bg-[#A259FF] hover:bg-[#A259FF]/90 py-2.5 font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {isLoading ? "Creating..." : "Create account"}
         </button>

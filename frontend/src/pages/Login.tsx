@@ -75,7 +75,7 @@ export default function Login() {
 
         for (const newItem of initialCartItems) {
           const existingItem = updatedCart.find(
-            (item) => item._id === newItem._id
+            (item) => item._id === newItem._id,
           );
 
           if (existingItem) existingItem.quantity += newItem.quantity;
@@ -87,7 +87,7 @@ export default function Login() {
 
       toast.success("Logged in successfully!");
 
-      // ✅ Redirect based on role
+      // Redirect based on role
       if (user?.role === "admin") {
         navigate("/admin");
       } else {
@@ -152,7 +152,7 @@ export default function Login() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full rounded-full bg-purple-600 hover:bg-purple-700 py-2.5 font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full rounded-full bg-[#A259FF] hover:bg-[#A259FF]/90 py-2.5 font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {isLoading ? "Logging in..." : "Login"}
         </button>
@@ -168,8 +168,10 @@ export default function Login() {
 
           <button
             type="button"
-            className="text-purple-400 hover:text-purple-300 underline underline-offset-4"
-            onClick={() => toast.info("Forgot password is not implemented yet.")}
+            className="text-[#A259FF] hover:text-[#A259FF]/90 underline underline-offset-4"
+            onClick={() =>
+              toast.info("Forgot password is not implemented yet.")
+            }
           >
             Forgot password?
           </button>
@@ -178,4 +180,3 @@ export default function Login() {
     </AuthLayout>
   );
 }
-
