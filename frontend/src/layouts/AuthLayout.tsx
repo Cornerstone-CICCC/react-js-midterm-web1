@@ -22,8 +22,7 @@ export default function AuthLayout({
   children,
 }: AuthLayoutProps) {
   return (
-    // ✅ lock to viewport height + prevent image overflow scrollbar
-    <div className="h-screen w-full overflow-hidden bg-neutral-950 text-white">
+    <div className="min-h-screen w-full overflow-hidden bg-neutral-950 text-white">
       {/* Mobile: image top + content
           Desktop: 2 columns full height */}
       <div className="h-full w-full grid grid-rows-[220px_1fr] md:grid-rows-1 md:grid-cols-2">
@@ -59,7 +58,7 @@ export default function AuthLayout({
                 {footerText}{" "}
                 <Link
                   to={footerLinkTo}
-                  className="text-purple-400 hover:text-purple-300 underline underline-offset-4"
+                  className="text-[#A259FF] hover:text-[#A259FF]/90 underline underline-offset-4"
                 >
                   {footerLinkText}
                 </Link>

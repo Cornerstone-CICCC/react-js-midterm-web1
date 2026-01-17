@@ -25,21 +25,20 @@ const App = () => {
               <Route path=":id" element={<ProductDetail />} />
             </Route>
             <Route path="cart" element={<Cart />} />
+            {/* 🔒 Protected admin route */}
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              }
+            />
           </Route>
 
           {/* Auth */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-
-          {/* 🔒 Protected admin route */}
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <AdminDashboard />
-              </AdminRoute>
-            }
-          />
         </Routes>
       </BrowserRouter>
     </UserContextProvider>
