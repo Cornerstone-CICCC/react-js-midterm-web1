@@ -60,6 +60,7 @@ const Products = () => {
     }
 
     const cartItemId = data._id;
+    const newQuantity = data.quantity
 
     //add product to cart in useContext if there are existing items, then increase the quantity
     setCart((prev) => {
@@ -69,7 +70,7 @@ const Products = () => {
       const existingitem = updatedCart.find((item) => item._id === product._id);
 
       if (existingitem) {
-        existingitem.quantity += 1;
+        existingitem.quantity = newQuantity;
       } else {
         const newItem: CartType = {
           ...product,
@@ -81,14 +82,11 @@ const Products = () => {
 
       return updatedCart;
     });
-
-    console.log("successfully added");
-
-    useEffect(() => {
-      console.log(logginUser);
-    }, []);
     console.log("successfully added");
   };
+
+  useEffect(() => {
+    }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
 

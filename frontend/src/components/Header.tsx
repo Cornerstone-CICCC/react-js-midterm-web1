@@ -15,6 +15,7 @@ const Header = () => {
 
   //Cart
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+ 
 
   //logout - clear context/sessionStorage and cookies
   const handleLogout = async () => {
@@ -30,7 +31,9 @@ const Header = () => {
     (setActiveCartId(null), setCart([]));
   };
 
-  useEffect(() => {}, [cart]);
+  useEffect(() => {
+    console.log(cart)
+  }, [cart]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-[#2B2B2B]">

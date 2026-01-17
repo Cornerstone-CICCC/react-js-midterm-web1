@@ -12,7 +12,7 @@ import { createCart } from "../../api/cart";
 import { toast, ToastContainer } from "react-toastify";
 
 const ProductDetail = () => {
-  const { logginUser, activeCartId, setActiveCartId, setCart } = useUser();
+  const { logginUser, activeCartId, setActiveCartId, setCart, cart} = useUser();
 
   const [product, setProduct] = useState<IProduct | null>(null);
   const { id } = useParams();
@@ -88,6 +88,7 @@ const ProductDetail = () => {
     }
 
     const cartItemId = data._id;
+    const newQuantity = data.quantity 
 
     //add product to cart in useContext if there are existing items, then increase the quantity
     setCart((prev) => {
@@ -97,12 +98,12 @@ const ProductDetail = () => {
       const existingitem = updatedCart.find((item) => item._id === product._id);
 
       if (existingitem) {
-        existingitem.quantity += 1;
+        existingitem.quantity = newQuantity;
       } else {
         const newItem: CartType = {
           ...product,
-          cartItemId,
           quantity: 1,
+          cartItemId,
         };
         updatedCart.push(newItem);
       }
@@ -112,6 +113,10 @@ const ProductDetail = () => {
 
     console.log("successfully added");
   };
+
+  // useEffect(()=>{
+  //   console.log(cart)
+  // },[cart])
 
   return (
     <div className="min-h-screen bg-[#2B2B2B] py-8 sm:py-12 lg:py-16">
