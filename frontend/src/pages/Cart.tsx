@@ -56,6 +56,11 @@ const Cart = () => {
   const removeItem = async (cartItemId: string) => {
     await deleteCartItem(cartItemId);
     setCartItems((items) => items.filter((item) => item._id !== cartItemId));
+
+    //setting context cart
+    setCart((prev)=>
+      prev.filter((item)=> item.cartItemId !== cartItemId))
+
   };
 
   const subtotal = cartItems.reduce(

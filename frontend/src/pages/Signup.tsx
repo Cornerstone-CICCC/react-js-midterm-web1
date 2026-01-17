@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import AuthLayout from "../layouts/AuthLayout";
-import { signup } from "../api/user";
+import { login, signup } from "../api/user";
+import { useUser } from "../context/user/UseUser";
+import type { CartType } from "../context/user/UserContext";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const { setLogginUser, setActiveCartId, setCart } = useUser();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -53,11 +56,56 @@ export default function Signup() {
         return;
       }
 
-      toast.success("Account created successfully!");
+            const data = await login({ email, password });
+            const loggedInUser = data?.result;
+      
+            if (!loggedInUser) {
+              const msg = "Login failed. Please try again.";
+              setError(msg);
+              toast.error(msg);
+              return;
+            }
+      
+            const user = loggedInUser.user;
+            const cartId = loggedInUser.cart ? loggedInUser.cart._id : "";
+            const initialCartItems: CartType[] = !loggedInUser.cartItems
+              ? []
+              : loggedInUser.cartItems.map((item) => ({
+                  cartItemId: item._id,
+                  _id: item.productId._id,
+                  title: item.productId.title,
+                  price: item.productId.price,
+                  brand: item.productId.brand,
+                  category: item.productId.category,
+                  description: item.productId.description,
+                  image: item.productId.image,
+                  stock: item.productId.stock,
+                  quantity: item.quantity,
+                }));
+      
+            setLogginUser(user);
+            setActiveCartId(cartId);
+      
+            setCart((prev) => {
+              const updatedCart = [...prev];
+      
+              for (const newItem of initialCartItems) {
+                const existingItem = updatedCart.find(
+                  (item) => item._id === newItem._id
+                );
+      
+                if (existingItem) existingItem.quantity += newItem.quantity;
+                else updatedCart.push(newItem);
+              }
+      
+              return updatedCart;
+            });
+            
+            toast.success("Logged in successfully!");
 
       // ✅ SAFE redirect for now (App.tsx only has /, /login, /signup)
       // Later we can redirect to /products in a small fix commit
-      navigate("/");
+      navigate("/products");
     } catch (err: any) {
       const msg =
         err?.response?.data?.message ||
