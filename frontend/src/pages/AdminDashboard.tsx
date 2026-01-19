@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import ProductModal, { type ProductForm } from "../components/ProductModal";
 import { toast } from "react-toastify";
 import AdminLayout from "../layouts/AdminLayout";
+import { AiOutlineDelete } from "react-icons/ai";
+
+import { FaRegEdit } from "react-icons/fa";
 import {
   addProduct,
   deleteProduct,
@@ -260,6 +263,21 @@ export default function AdminDashboard() {
                         className="text-white/80 hover:text-red-300 underline underline-offset-4"
                       >
                         DELETE
+                      </button>
+                    </div>
+                    {/* mobile */}
+                    <div className="flex md:hidden gap-2 text-sm">
+                      <button
+                        onClick={() => openEdit(p)}
+                        className="text-white/80 hover:text-white underline underline-offset-4"
+                      >
+                        <FaRegEdit/>
+                      </button>
+                      <button
+                        onClick={() => handleDelete(p._id)}
+                        className="text-white/80 hover:text-red-300 underline underline-offset-4"
+                      >
+                        <AiOutlineDelete/>
                       </button>
                     </div>
                   </div>
